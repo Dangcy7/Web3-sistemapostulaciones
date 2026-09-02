@@ -1,0 +1,104 @@
+* {
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+}
+body {
+    background-color: #E6F3F5;
+    color: #4D4730;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+form {
+    width: 90%;
+    max-width: 900px;
+    margin: 50px auto;
+    padding: 40px;
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    font-family: "Source Code Pro", monospace;
+}
+form h2 {
+    color: #ED5C26;
+    font-size: 32px;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+form h3 {
+    color: #045C6B;
+    font-size: 22px;
+    margin-top: 25px;
+    margin-bottom: 10px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #7CB4B4;
+}
+
+form label {
+    color: #4D4730;
+    font-size: 16px;
+    font-weight: bold;
+    margin-top: 8px;
+}
+
+form input,
+form select,
+form textarea {
+    width: 100%;
+    padding: 11px;
+    border: 1px solid #5B7F81;
+    border-radius: 6px;
+    background-color: #E6F3F5;
+    color: #4D4730;
+    font-family: "Source Code Pro", monospace;
+    font-size: 15px;
+    outline: none;
+}
+
+form input:focus,
+form select:focus,
+form textarea:focus {
+    border: 2px solid #045C6B;
+}
+
+form textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+form button {
+    margin-top: 25px;
+    padding: 13px 20px;
+    border: none;
+    border-radius: 6px;
+    background-color: #045C6B;
+    color: white;
+    font-family: "Source Code Pro", monospace;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+form button:hover {
+    background-color: #285047;
+}
+
+form .boton {
+    display: inline-block;
+    text-align: center;
+    background-color: #ED5C26;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+form .boton:hover {
+    background-color: #285047;
+}

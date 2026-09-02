@@ -1,0 +1,116 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar sesión - CodeWork</title>
+    <link rel="stylesheet" href="css/sty.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300..700&family=Google+Sans+Code:ital,wght@0,300..800;1,300..800&family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&display=swap"
+        rel="stylesheet">
+</head>
+<body>
+    <header>
+        <img src="icons/logo.png" alt="CodeWork" class="logo">
+        <h1 class="google-sans-code">
+            CodeWork
+        </h1>
+        <nav>
+            <a href="inicio.html" class="source-code-pro">
+                Inicio
+            </a>
+            <a href="ver_postulantes.html" class="source-code-pro">
+                Postulantes
+            </a>
+            <a href="#" class="source-code-pro">
+                Consultas
+            </a>
+            <a href="#" class="source-code-pro">
+                Referencias
+            </a>
+        </nav>
+    </header>
+    <main>
+        <section class="login-container">
+            <div class="login-box">
+                <h2 class="google-sans-code">
+                    Iniciar sesión
+                </h2>
+                <p class="source-code-pro">
+                    Ingresa tus datos para acceder al sistema.
+                </p>
+                <form id="loginForm">
+                    <div class="campo">
+                        <label for="usuario" class="source-code-pro">
+                            Usuario
+                        </label>
+                        <input
+                            type="text"
+                            id="usuario"
+                            name="usuario"
+                            placeholder="Ingresa tu usuario"
+                            required
+                        >
+                    </div>
+                    <div class="campo">
+                        <label for="password" class="source-code-pro">
+                            Contraseña
+                        </label>
+                        <input
+                            type="password"
+                            id="password"
+                            name="password"
+                            placeholder="Ingresa tu contraseña"
+                            required
+                        >
+                    </div>
+                    <button
+                        type="submit"
+                        class="boton source-code-pro">
+                        Iniciar sesión
+                    </button>
+                    <p id="mensaje" class="mensaje"></p>
+                </form>
+            </div>
+        </section>
+    </main>
+    <footer>
+        <p class="source-code-pro">
+            Proyecto Web 3 - CodeWork
+        </p>
+        <p class="source-code-pro">
+            © 2026 CodeWork. Todos los derechos reservados.
+        </p>
+    </footer>
+    <script>
+        const formulario = document.getElementById("loginForm");
+        formulario.addEventListener("submit", function(event) {
+            event.preventDefault();
+            const usuario = document.getElementById("usuario").value;
+            const password = document.getElementById("password").value;
+            const mensaje = document.getElementById("mensaje");
+            const usuarioCorrecto = "admin";
+            const passwordCorrecto = "12345";
+            if (
+                usuario === usuarioCorrecto &&
+                password === passwordCorrecto
+            ) {
+                mensaje.textContent = "Inicio de sesión correcto.";
+                mensaje.className = "mensaje correcto";
+                localStorage.setItem("sesionIniciada", "true");
+                localStorage.setItem("usuario", usuario);
+                setTimeout(function() {
+                    window.location.href = "inicio.html";
+                }, 1000);
+            } else {
+                mensaje.textContent =
+                    "Usuario o contraseña incorrectos.";
+
+                mensaje.className = "mensaje error";
+            }
+        });
+    </script>
+</body>
+</html>
