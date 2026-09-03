@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrate</title>
+    <link rel="stylesheet" href="css\sty1.css ">
+    <link rel="stylesheet" href="css\sty.css ">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans+Code:ital,wght@0,300..800;1,300..800&display=swap"
+        rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300..700&family=Google+Sans+Code:ital,wght@0,300..800;1,1,300..800&family=M+PLUS+Code+Latin:wght@100..700&family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <header>
+        <img src="icons/logo.png" alt="CodeWork" class="logo">
+        <h1 class="google-sans-code">CodeWork</h1>
+        <nav>
+            <a href="inicio.html" class="source-code-pro">Inicio</a>
+            <a href="postulantes.html" class="source-code-pro">Postulantes</a>
+            <a href="ver_postulantes.html" class="source-code-pro">Consultas</a>
+            <a href="#" class="source-code-pro">Referencias</a>
+        </nav>
+    </header>
+    <form>
+        <h2>Formulario de Postulación</h2>
+
+        <h3>Información personal</h3>
+
+        <label for="nombre">Nombre completo:</label>
+        <input type="text" id="nombre" name="nombre">
+
+        <label for="ci">CI:</label>
+        <input type="text" id="ci" name="ci">
+
+        <label for="fechaNacimiento">Fecha de nacimiento:</label>
+        <input type="date" id="fechaNacimiento" name="fechaNacimiento">
+
+        <label for="telefono">Teléfono:</label>
+        <input type="tel" id="telefono" name="telefono">
+
+        <label for="correo">Correo electrónico:</label>
+        <input type="email" id="correo" name="correo">
+
+        <label for="ciudad">Ciudad:</label>
+        <input type="text" id="ciudad" name="ciudad">
+
+        <h3>Formación académica</h3>
+
+        <label for="nivel">Nivel de formación:</label>
+
+        <select id="nivel" name="nivel">
+            <option value="">Seleccione</option>
+            <option value="secundaria">Secundaria</option>
+            <option value="tecnico">Técnico</option>
+            <option value="universitario">Universitario</option>
+            <option value="licenciatura">Licenciatura</option>
+            <option value="ingenieria">Ingeniería</option>
+            <option value="posgrado">Posgrado</option>
+        </select>
+
+        <label for="carrera">Carrera o especialidad:</label>
+        <input type="text" id="carrera" name="carrera">
+
+        <label for="institucion">Institución educativa:</label>
+        <input type="text" id="institucion" name="institucion">
+
+
+        <h3>Perfil profesional</h3>
+
+        <label for="puesto">Puesto al que desea postular:</label>
+
+        <select id="puesto" name="puesto">
+            <option value="">Seleccione</option>
+            <option value="desarrollador-web">Desarrollador Web</option>
+            <option value="frontend">Desarrollador Frontend</option>
+            <option value="backend">Desarrollador Backend</option>
+            <option value="fullstack">Desarrollador Full Stack</option>
+            <option value="software">Desarrollador de Software</option>
+            <option value="programador">Programador</option>
+        </select>
+
+        <label for="experiencia">Años de experiencia:</label>
+        <input type="number" id="experiencia" name="experiencia" min="0">
+
+        <label for="lenguajes">Lenguajes de programación que conoce:</label>
+        <input type="text" id="lenguajes" name="lenguajes" placeholder="Ej.: Java, Python, JavaScript, C++">
+
+        <label for="tecnologias">Tecnologías y herramientas que conoce:</label>
+        <textarea id="tecnologias" name="tecnologias" placeholder="Ej.: HTML, CSS, React, Git, MySQL..."></textarea>
+
+        <label for="proyectos">Proyectos realizados:</label>
+        <textarea id="proyectos" name="proyectos"
+            placeholder="Describa brevemente sus proyectos o trabajos realizados"></textarea>
+
+
+        <h3>Experiencia laboral</h3>
+
+        <label for="empresa">Última empresa o lugar donde trabajó:</label>
+        <input type="text" id="empresa" name="empresa">
+
+        <label for="cargo">Cargo desempeñado:</label>
+        <input type="text" id="cargo" name="cargo">
+
+        <label for="funciones">Funciones realizadas:</label>
+        <textarea id="funciones" name="funciones"></textarea>
+
+        <label for="experienciaLaboral">Experiencia laboral adicional:</label>
+        <textarea id="experienciaLaboral" name="experienciaLaboral"></textarea>
+
+
+        <h3>Disponibilidad</h3>
+
+        <label for="disponibilidad">Disponibilidad:</label>
+
+        <select id="disponibilidad" name="disponibilidad">
+            <option value="">Seleccione</option>
+            <option value="tiempo-completo">Tiempo completo</option>
+            <option value="medio-tiempo">Medio tiempo</option>
+            <option value="por-horas">Por horas</option>
+            <option value="remoto">Trabajo remoto</option>
+        </select>
+
+        <label for="fechaInicio">Fecha disponible para comenzar:</label>
+        <input type="date" id="fechaInicio" name="fechaInicio">
+
+        <label for="pretension">Pretensión salarial:</label>
+        <input type="number" id="pretension" name="pretension" min="0">
+
+
+        <h3>Información adicional</h3>
+
+        <label for="habilidades">Habilidades adicionales:</label>
+        <textarea id="habilidades" name="habilidades"
+            placeholder="Trabajo en equipo, liderazgo, comunicación, etc."></textarea>
+
+        <label for="sobreMi">Cuéntenos sobre usted:</label>
+        <textarea id="sobreMi" name="sobreMi"></textarea>
+
+        <br><br>
+
+        <button type="submit">Enviar postulación</button>
+
+        <a href="inicio.html" class="boton source-code-pro">
+            Volver
+        </a>
+
+    </form>
+    <footer id="contacto">
+        <p class="source-code-pro">Proyecto Web 3 - CodeWork</p>
+        <p class="source-code-pro">Contacto: ***********@gmail.com | Teléfono: 123-456-7890</p>
+        <p class="source-code-pro">© 2026 CodeWork. Todos los derechos reservados.</p>
+        <div class="social-media">
+            <a href="https://www.facebook.com" target="_blank" aria-label="Facebook"><img src="icons\facebook.png"
+                    alt="Facebook" class="social-icon"></a>
+            <a href="https://www.twitter.com" target="_blank" aria-label="Twitter"><img src="icons\x.png" alt="Twitter"
+                    class="social-icon"></a>
+            <a href="https://www.instagram.com" target="_blank" aria-label="Instagram"><img src="icons\instagram.png"
+                    alt="Instagram" class="social-icon"></a>
+        </div>
+    </footer>
+    <script src="js/registro.js"></script>
+
+</body>
+
+</html>
