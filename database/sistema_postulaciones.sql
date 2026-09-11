@@ -83,7 +83,7 @@ CREATE TABLE `postulante` (
   `nombre` varchar(50) NOT NULL,
   `apellido` varchar(50) NOT NULL,
   `telefono` varchar(20) DEFAULT NULL,
-  `correro` varchar(100) DEFAULT NULL,
+  `correo` varchar(100) DEFAULT NULL,
   `ciudad` varchar(50) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
