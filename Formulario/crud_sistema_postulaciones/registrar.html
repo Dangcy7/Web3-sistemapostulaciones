@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>Registrar postulante</title>
+</head>
+
+<body>
+    <header>
+        <h1>Registrar postulante</h1>
+        <p>Complete todos los datos del postulante.</p>
+    </header>
+    <main>
+        <form id="formRegistro">
+            <fieldset>
+                <legend>Datos personales</legend>
+                <label>Nombre: <input type="text" name="nombre" required></label><br><br>
+                <label>Apellido: <input type="text" name="apellido" required></label><br><br>
+                <label>CI: <input type="number" name="ci"></label><br><br>
+                <label>Teléfono: <input type="number" name="telefono"></label><br><br>
+                <label>Correo: <input type="email" name="correo"></label><br><br>
+                <label>Ciudad: <input type="text" name="ciudad"></label>
+            </fieldset><br>
+            <fieldset>
+                <legend>Formación académica</legend>
+                <div id="formaciones"></div><button type="button" id="agregarFormacion">Agregar formación</button>
+            </fieldset><br>
+            <fieldset>
+                <legend>Experiencia laboral</legend>
+                <div id="experiencias"></div><button type="button" id="agregarExperiencia">Agregar experiencia</button>
+            </fieldset><br>
+            <fieldset>
+                <legend>Lenguajes de programación</legend>
+                <div id="lenguajes"></div><button type="button" id="agregarLenguaje">Agregar lenguaje</button>
+            </fieldset><br>
+            <fieldset>
+                <legend>Herramientas</legend>
+                <div id="herramientas"></div><button type="button" id="agregarHerramienta">Agregar herramienta</button>
+            </fieldset><br>
+            <fieldset>
+                <legend>Proyectos</legend>
+                <div id="proyectos"></div><button type="button" id="agregarProyecto">Agregar proyecto</button>
+            </fieldset><br>
+            <button type="submit">Registrar y limpiar</button>
+            <button type="button" onclick="location.href='index.html'">Volver</button>
+        </form>
+        <p id="mensaje"></p>
+    </main>
+    <script src="js/registrar.js"></script>
+</body>
+
+</html>

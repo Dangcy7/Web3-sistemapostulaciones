@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>Modificar postulante</title>
+</head>
+
+<body>
+    <header>
+        <h1>Modificar postulante</h1>
+    </header>
+    <main>
+        <form id="formModificar">
+            <input type="hidden" name="id" id="id">
+            <fieldset>
+                <legend>Datos personales</legend>
+                <label>Nombre: <input type="text" name="nombre" id="nombre" required></label><br><br>
+                <label>Apellido: <input type="text" name="apellido" id="apellido" required></label><br><br>
+                <label>CI: <input type="text" name="ci" id="ci"></label><br><br>
+                <label>Teléfono: <input type="text" name="telefono" id="telefono"></label><br><br>
+                <label>Correo: <input type="email" name="correo" id="correo"></label><br><br>
+                <label>Ciudad: <input type="text" name="ciudad" id="ciudad"></label>
+            </fieldset><br>
+            <fieldset>
+                <legend>Formación académica</legend>
+                <div id="formaciones"></div><button type="button" id="agregarFormacion">Agregar formación</button>
+            </fieldset><br>
+            <fieldset>
+                <legend>Experiencia laboral</legend>
+                <div id="experiencias"></div><button type="button" id="agregarExperiencia">Agregar experiencia</button>
+            </fieldset><br>
+            <fieldset>
+                <legend>Lenguajes de programación</legend>
+                <div id="lenguajes"></div><button type="button" id="agregarLenguaje">Agregar lenguaje</button>
+            </fieldset><br>
+            <fieldset>
+                <legend>Herramientas</legend>
+                <div id="herramientas"></div><button type="button" id="agregarHerramienta">Agregar herramienta</button>
+            </fieldset><br>
+            <fieldset>
+                <legend>Proyectos</legend>
+                <div id="proyectos"></div><button type="button" id="agregarProyecto">Agregar proyecto</button>
+            </fieldset><br>
+            <button type="submit">Guardar cambios</button><button type="button"
+                onclick="location.href='registros.html'">Cancelar</button>
+        </form>
+        <p id="mensaje"></p>
+    </main>
+    <script src="js/modificar.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,18 @@
+<?php
+require_once "funciones.php";
+$id=$_POST["id"]??"";if(!idValido($id))respuesta(false,"ID inválido.");$id=(int)$id;
+$nombre=valorPost("nombre");$apellido=valorPost("apellido");if($nombre===""||$apellido==="")respuesta(false,"Nombre y apellido son obligatorios.");
+$conexion->begin_transaction();
+try{
+ $sets=["nombre=?","apellido=?"];$vals=[$nombre,$apellido];
+ foreach(["ci","telefono","correo","ciudad"] as $c)if(tieneColumna("postulante",$c)){$sets[]="`$c`=?";$vals[]=valorPost($c);}
+ $vals[]=$id;$st=$conexion->prepare("UPDATE postulante SET ".implode(",",$sets)." WHERE id=?");$types=str_repeat("s",count($vals)-1)."i";$st->bind_param($types,...$vals);$st->execute();
+ foreach(["formacion","experiencia_laboral","proyecto","postulante_lenguaje","postulante_herramienta"] as $t){$st=$conexion->prepare("DELETE FROM `$t` WHERE postulante_id=?");$st->bind_param("i",$id);$st->execute();}
+ $niv=listaPost("nivel");$car=listaPost("carrera");$ins=listaPost("institucion");$st=$conexion->prepare("INSERT INTO formacion(postulante_id,nivel,carrera,institucion) VALUES(?,?,?,?)");for($i=0;$i<count($niv);$i++){ $a=trim($niv[$i]??"");$b=trim($car[$i]??"");$c=trim($ins[$i]??"");if($a!==""||$b!==""||$c!==""){$st->bind_param("isss",$id,$a,$b,$c);$st->execute();}}
+ $lug=listaPost("lugar");$tip=listaPost("tipo");$pue=listaPost("puesto");$ano=listaPost("anos_experiencia");$st=$conexion->prepare("INSERT INTO experiencia_laboral(postulante_id,lugar,tipo,puesto,años_experiencia) VALUES(?,?,?,?,?)");for($i=0;$i<count($lug);$i++){ $a=trim($lug[$i]??"");$b=trim($tip[$i]??"");$c=trim($pue[$i]??"");$d=($ano[$i]??"")===""?null:(int)$ano[$i];if($a!==""||$b!==""||$c!==""||$d!==null){$st->bind_param("isssi",$id,$a,$b,$c,$d);$st->execute();}}
+ $sl=$conexion->prepare("SELECT id FROM lenguaje WHERE nombre=?");$il=$conexion->prepare("INSERT INTO lenguaje(nombre) VALUES(?)");$rl=$conexion->prepare("INSERT IGNORE INTO postulante_lenguaje(postulante_id,lenguaje_id) VALUES(?,?)");foreach(listaPost("lenguajes") as $n){$n=trim($n);if($n==="")continue;$sl->bind_param("s",$n);$sl->execute();$sl->store_result();if($sl->num_rows){$sl->bind_result($lid);$sl->fetch();}else{$il->bind_param("s",$n);$il->execute();$lid=$conexion->insert_id;}$rl->bind_param("ii",$id,$lid);$rl->execute();$sl->free_result();}
+ $sh=$conexion->prepare("SELECT id FROM herramienta WHERE nombre=?");$ih=$conexion->prepare("INSERT INTO herramienta(nombre) VALUES(?)");$rh=$conexion->prepare("INSERT IGNORE INTO postulante_herramienta(postulante_id,herramienta_id) VALUES(?,?)");foreach(listaPost("herramientas") as $n){$n=trim($n);if($n==="")continue;$sh->bind_param("s",$n);$sh->execute();$sh->store_result();if($sh->num_rows){$sh->bind_result($hid);$sh->fetch();}else{$ih->bind_param("s",$n);$ih->execute();$hid=$conexion->insert_id;}$rh->bind_param("ii",$id,$hid);$rh->execute();$sh->free_result();}
+ $pn=listaPost("proyecto_nombre");$pd=listaPost("proyecto_descripcion");$pe=listaPost("proyecto_enlace");$st=$conexion->prepare("INSERT INTO proyecto(postulante_id,nombre,descripcion,enlace) VALUES(?,?,?,?)");for($i=0;$i<count($pn);$i++){ $a=trim($pn[$i]??"");$b=trim($pd[$i]??"");$c=trim($pe[$i]??"");if($a!==""){$st->bind_param("isss",$id,$a,$b,$c);$st->execute();}}
+ $conexion->commit();respuesta(true,"Postulante modificado correctamente.");
+}catch(Throwable $e){$conexion->rollback();respuesta(false,"Error al modificar: ".$e->getMessage());}
+?>
