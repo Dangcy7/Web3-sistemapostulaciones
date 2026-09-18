@@ -1,0 +1,165 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: #E6F3F5;
+    color: #4D4730;
+    min-height: 100vh;
+    font-family: "Source Code Pro", monospace;
+}
+
+/* Encabezado */
+
+header {
+    background-color: #1E1F26;
+    color: white;
+    padding: 30px 40px;
+    text-align: center;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25);
+}
+
+header h1 {
+    color: #ED5C26;
+    font-size: 30px;
+    margin-bottom: 8px;
+}
+
+header p {
+    color: #D7DAE0;
+    font-size: 16px;
+}
+
+/* Contenedor principal */
+
+main {
+    width: 90%;
+    max-width: 1000px;
+    margin: 40px auto;
+}
+
+/* Formulario */
+
+#formRegistro {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+/* Secciones */
+
+fieldset {
+    background-color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 30px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+legend {
+    background-color: #045C6B;
+    color: white;
+    padding: 10px 18px;
+    border-radius: 6px;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+/* Campos */
+
+label {
+    display: block;
+    margin-bottom: 15px;
+    font-weight: bold;
+}
+
+input,
+select,
+textarea {
+    width: 100%;
+    margin-top: 7px;
+    padding: 12px;
+    border: 2px solid #D7DAE0;
+    border-radius: 6px;
+    font-family: "Source Code Pro", monospace;
+    font-size: 15px;
+    outline: none;
+    transition: 0.3s;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    border-color: #045C6B;
+}
+
+/* Botones */
+
+button {
+    background-color: #045C6B;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 6px;
+    font-family: "Source Code Pro", monospace;
+    font-size: 15px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+button:hover {
+    background-color: #285047;
+}
+
+#formRegistro > button[type="submit"] {
+    background-color: #ED5C26;
+    font-weight: bold;
+}
+
+#formRegistro > button[type="submit"]:hover {
+    background-color: #c94b1c;
+}
+
+/* Mensaje */
+
+#mensaje {
+    margin: 25px auto;
+    text-align: center;
+    font-weight: bold;
+}
+
+/* Elementos agregados dinámicamente */
+
+#formaciones,
+#experiencias,
+#lenguajes,
+#herramientas,
+#proyectos {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+/* Responsive */
+
+@media (max-width: 768px) {
+
+    main {
+        width: 95%;
+    }
+
+    fieldset {
+        padding: 20px;
+    }
+
+    header {
+        padding: 25px 20px;
+    }
+
+    header h1 {
+        font-size: 25px;
+    }
+}
