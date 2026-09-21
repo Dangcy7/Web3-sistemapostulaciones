@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Consultas - CodeWork</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300..700&family=Google+Sans+Code:wght@300..800&family=Source+Code+Pro:wght@200..900&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="css/consultas.css">
+</head>
+
+<body class="site-page">
+
+    <header class="site-header">
+        <a href="../index.html" class="site-brand">
+            <img src="../icons/logo.png" alt="CodeWork">
+            <span>CodeWork</span>
+        </a>
+
+        <nav>
+            <a href="../index.html">Inicio</a>
+            <a href="../Formulario/crud_sistema_postulaciones/registros.html">Postulantes</a>
+            <a href="consultas.html">Consultas</a>
+            <a href="referencias.html">Referencias</a>
+        </nav>
+    </header>
+
+    <main class="page">
+        <h1 class="page-title">Consultar</h1>
+
+        <p class="page-subtitle">
+            Seleccione un postulante para consultar su información y sus proyectos.
+        </p>
+
+        <section class="panel">
+            <label for="postulante">
+                Postulante:
+
+                <select id="postulante">
+                    <option value="">Seleccione un postulante</option>
+                </select>
+            </label>
+
+            <p id="mensaje" class="message"></p>
+
+            <div id="detalle"></div>
+        </section>
+
+        <div class="back-container">
+            <a href="../index.html" class="secondary-button">
+                Volver al inicio
+            </a>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <p>Proyecto Web 3 - CodeWork</p>
+        <p>Contacto: ***********@gmail.com | Teléfono: 123-456-7890</p>
+        <p>© 2026 CodeWork. Todos los derechos reservados.</p>
+
+        <div class="social-media">
+            <a href="https://www.facebook.com" target="_blank">
+                <img src="../icons/facebook.png" alt="Facebook" class="social-icon">
+            </a>
+
+            <a href="https://www.twitter.com" target="_blank">
+                <img src="../icons/x.png" alt="Twitter" class="social-icon">
+            </a>
+
+            <a href="https://www.instagram.com" target="_blank">
+                <img src="../icons/instagram.png" alt="Instagram" class="social-icon">
+            </a>
+        </div>
+    </footer>
+
+    <script src="js/consultas.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,138 @@
+.crud-main {
+    width: min(1000px, 92%);
+    margin: 30px auto 45px;
+}
+
+.page-title {
+    color: #045C6B;
+    font-size: 30px;
+    margin: 0 0 6px;
+}
+
+.page-subtitle {
+    margin: 0 0 25px;
+    color: #4D4730;
+}
+
+#formRegistro,
+#formModificar {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+fieldset {
+    border: none;
+    border-radius: 10px;
+    background-color: white;
+    padding: 24px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+legend {
+    padding: 9px 15px;
+    border-radius: 6px;
+    background-color: #045C6B;
+    color: white;
+    font-size: 17px;
+    font-weight: bold;
+}
+
+label {
+    display: block;
+    margin-bottom: 13px;
+    font-weight: bold;
+}
+
+input,
+select,
+textarea {
+    width: 100%;
+    margin-top: 6px;
+    padding: 10px 12px;
+    border: 2px solid #D7DAE0;
+    border-radius: 6px;
+    color: #4D4730;
+    background-color: white;
+    font-family: "Source Code Pro", monospace;
+    font-size: 14px;
+    outline: none;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    border-color: #045C6B;
+}
+
+#formaciones,
+#experiencias,
+#lenguajes,
+#herramientas,
+#proyectos {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+#formaciones > div,
+#experiencias > div,
+#lenguajes > div,
+#herramientas > div,
+#proyectos > div {
+    padding: 15px;
+    border: 1px solid #D7DAE0;
+    border-radius: 8px;
+    background-color: #F8FAFA;
+}
+
+button,
+.secondary-button,
+.record-button,
+.profile-actions a {
+    display: inline-block;
+    border: none;
+    border-radius: 6px;
+    padding: 10px 16px;
+    background-color: #045C6B;
+    color: white;
+    text-decoration: none;
+    font-family: "Source Code Pro", monospace;
+    font-size: 14px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+button:hover,
+.secondary-button:hover,
+.record-button:hover,
+.profile-actions a:hover {
+    background-color: #285047;
+}
+
+button[type="button"] {
+    width: fit-content;
+}
+
+.form-actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.primary-button {
+    background-color: #ED5C26;
+    font-weight: bold;
+}
+
+.primary-button:hover {
+    background-color: #c94b1c;
+}
+
+#mensaje {
+    margin: 20px 0 0;
+    text-align: center;
+    font-weight: bold;
+}

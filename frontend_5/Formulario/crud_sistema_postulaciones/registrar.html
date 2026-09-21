@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Registrar postulante</title>
+    <link rel="stylesheet" href="css/sty2.css">
+    <link rel="stylesheet" href="css/sty.css">
+    <link rel="stylesheet" href="css/registrar.css">
+</head>
+
+<body class="site-page">
+    <header class="site-header">
+        <a href="../../index.html" class="site-brand">
+            <img src="/frontend_5/icons/logo.png" alt="CodeWork">
+            <span>CodeWork</span>
+        </a>
+        <nav>
+            <a href="../../index.html">Inicio</a>
+            <a href="registros.html">Postulantes</a>
+            <a href="../../Consultas/consultas.html">Consultas</a>
+            <a href="../../Consultas/referencias.html">Referencias</a>
+        </nav>
+    </header>
+
+    <main class="crud-main">
+        <h1 class="page-title">Registrar postulante</h1>
+        <p class="page-subtitle">Complete los datos del postulante.</p>
+
+        <form id="formRegistro">
+            <fieldset>
+                <legend>Datos personales</legend>
+                <label>Nombre: <input type="text" name="nombre" required></label>
+                <label>Apellido: <input type="text" name="apellido" required></label>
+                <label>CI: <input type="number" name="ci"></label>
+                <label>Teléfono: <input type="text" name="telefono"></label>
+                <label>Correo: <input type="email" name="correo"></label>
+                <label>Localidad:
+                <select name="ciudad" required>
+                    <option value="">Seleccione una localidad</option>
+                    <option value="La Paz">La Paz</option>
+                    <option value="Cochabamba">Cochabamba</option>
+                    <option value="Santa Cruz">Santa Cruz</option>
+                    <option value="Oruro">Oruro</option>
+                    <option value="Potosí">Potosí</option>
+                    <option value="Chuquisaca">Chuquisaca</option>
+                    <option value="Tarija">Tarija</option>
+                    <option value="Beni">Beni</option>
+                    <option value="Pando">Pando</option>
+                    <option value="Internacional">Internacional</option>
+                </select></label>
+            </fieldset>
+
+            <fieldset>
+                <legend>Formación académica</legend>
+                <div id="formaciones"></div>
+                <button type="button" id="agregarFormacion">Agregar formación</button>
+            </fieldset>
+
+            <fieldset>
+                <legend>Experiencia laboral</legend>
+                <div id="experiencias"></div>
+                <button type="button" id="agregarExperiencia">Agregar experiencia</button>
+            </fieldset>
+
+            <fieldset>
+                <legend>Lenguajes de programación</legend>
+                <div id="lenguajes"></div>
+                <button type="button" id="agregarLenguaje">Agregar lenguaje</button>
+            </fieldset>
+
+            <fieldset>
+                <legend>Herramientas</legend>
+                <div id="herramientas"></div>
+                <button type="button" id="agregarHerramienta">Agregar herramienta</button>
+            </fieldset>
+
+            <fieldset>
+                <legend>Proyectos</legend>
+                <div id="proyectos"></div>
+                <button type="button" id="agregarProyecto">Agregar proyecto</button>
+            </fieldset>
+
+            <div class="form-actions">
+                <button type="submit" class="primary-button">Registrar y limpiar</button>
+                <a href="/frontend_5/index.html" class="secondary-button">Volver</a>
+            </div>
+        </form>
+
+        <p id="mensaje"></p>
+    </main>
+
+    <footer class="site-footer">
+        <p>Proyecto Web 3 - CodeWork</p>
+        <p>Contacto: ***********@gmail.com | Teléfono: 123-456-7890</p>
+        <p>© 2026 CodeWork. Todos los derechos reservados.</p>
+        <div class="social-media">
+        <a href="https://www.facebook.com" target="_blank" aria-label="Facebook">
+            <img src="/frontend_5/icons/facebook.png" alt="Facebook" class="social-icon">
+        </a>
+        <a href="https://www.twitter.com" target="_blank" aria-label="Twitter">
+            <img src="/frontend_5/icons/x.png" alt="Twitter" class="social-icon">
+        </a>
+        <a href="https://www.instagram.com" target="_blank" aria-label="Instagram">
+            <img src="/frontend_5/icons/instagram.png" alt="Instagram" class="social-icon">
+        </a>
+    </div>
+    </footer>
+
+    <script src="js/registrar.js"></script>
+</body>
+
+</html>

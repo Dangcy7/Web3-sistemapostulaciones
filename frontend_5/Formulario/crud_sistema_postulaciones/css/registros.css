@@ -1,0 +1,120 @@
+.records-main {
+    width: min(1150px, 92%);
+    margin: 30px auto 45px;
+}
+
+.records-main > h1 {
+    margin: 0 0 22px;
+    color: #045C6B;
+    font-size: 30px;
+}
+
+.options-section {
+    margin-bottom: 22px;
+}
+
+.options-section h2 {
+    margin: 0 0 10px;
+    color: #4D4730;
+    font-size: 19px;
+}
+
+.options-buttons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.record-button.primary {
+    background-color: #ED5C26;
+    font-weight: bold;
+}
+
+.record-button.primary:hover {
+    background-color: #c94b1c;
+}
+
+.records-table-wrap {
+    overflow-x: auto;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+table {
+    width: 100%;
+    min-width: 850px;
+    border-collapse: collapse;
+}
+
+thead {
+    background-color: #045C6B;
+    color: white;
+}
+
+th,
+td {
+    padding: 13px 14px;
+    text-align: left;
+}
+
+th {
+    white-space: nowrap;
+}
+
+td {
+    border-bottom: 1px solid #D7DAE0;
+}
+
+tbody tr:hover {
+    background-color: #E6F3F5;
+}
+
+.table-actions {
+    display: flex;
+    gap: 7px;
+    flex-wrap: wrap;
+}
+
+.table-button {
+    display: inline-block;
+    padding: 7px 10px;
+    border-radius: 5px;
+    background-color: #045C6B;
+    color: white;
+    text-decoration: none;
+    border: none;
+    font-family: "Source Code Pro", monospace;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.table-button:hover {
+    background-color: #285047;
+}
+
+.table-button.delete {
+    background-color: #ED5C26;
+}
+
+.table-button.delete:hover {
+    background-color: #c94b1c;
+}
+.record-button {
+    display: inline-block;
+    padding: 11px 18px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-family: "Source Code Pro", monospace;
+    font-size: 15px;
+    color: white;
+    transition: 0.3s;
+}
+
+.record-button.secondary-button {
+    background-color: #045C6B;
+}
+
+.record-button.secondary-button:hover {
+    background-color: #285047;
+}

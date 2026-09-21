@@ -1,0 +1,83 @@
+.profile-main {
+    width: min(1000px, 92%);
+    margin: 30px auto 45px;
+}
+
+.profile-main > h1 {
+    margin: 0 0 20px;
+    color: #045C6B;
+    font-size: 30px;
+}
+
+#perfil {
+    background-color: white;
+    padding: 28px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+#perfil h2 {
+    color: #045C6B;
+    margin: 0 0 20px;
+}
+
+#perfil h3 {
+    color: #ED5C26;
+    margin: 25px 0 10px;
+}
+
+#perfil p {
+    margin: 0 0 9px;
+    line-height: 1.5;
+}
+
+#perfil ul {
+    margin: 10px 0 15px 25px;
+}
+
+#perfil li {
+    margin-bottom: 7px;
+}
+
+#perfil table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+#perfil th {
+    background-color: #045C6B;
+    color: white;
+    padding: 11px;
+    text-align: left;
+}
+
+#perfil td {
+    padding: 11px;
+    border-bottom: 1px solid #D7DAE0;
+}
+
+.profile-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 15px;
+}
+.record-button {
+    display: inline-block;
+    padding: 11px 18px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-family: "Source Code Pro", monospace;
+    font-size: 15px;
+    color: white;
+    transition: 0.3s;
+}
+
+.record-button.secondary-button {
+    background-color: #045C6B;
+}
+
+.record-button.secondary-button:hover {
+    background-color: #285047;
+}
