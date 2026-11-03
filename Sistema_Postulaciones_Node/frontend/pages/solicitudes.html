@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#1E1F26">
+  <title>Solicitudes de trabajo | CodeWork</title>
+  <link rel="icon" type="image/png" href="../assets/icons/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Google+Sans+Code:wght@400;500;600;700&family=Source+Code+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/styles.css">
+  <link rel="stylesheet" href="../css/formularios.css">
+</head>
+<body data-required-role="admin">
+  <header class="site-header">
+    <a class="brand" href="../index.html" aria-label="CodeWork, inicio"><img src="../assets/icons/logo.png" alt=""><span>Code<span class="brand-accent">Work</span></span></a>
+    <nav class="main-nav" aria-label="Navegación principal"><a class="nav-link" href="../index.html">Inicio</a><a class="nav-link" href="postulantes.html">Postulantes</a><button class="nav-link nav-link-button" type="button" data-logout>Cerrar sesión</button></nav>
+  </header>
+
+  <main class="page-width content-page">
+    <div class="page-title-row"><div><p class="eyebrow">ESPACIO ADMINISTRATIVO</p><h1>Búsqueda y selección</h1><p class="page-lede">Define los requisitos de una oportunidad y revisa qué perfiles cumplen mejor con ellos.</p></div><span class="role-chip"><span class="role-dot"></span> Acceso administrador</span></div>
+
+    <section class="panel-card request-create" aria-labelledby="request-create-title">
+      <div class="card-heading"><div><p class="eyebrow">NUEVA OPORTUNIDAD</p><h2 id="request-create-title">Definir solicitud de trabajo</h2></div></div>
+      <form id="solicitud-form" novalidate>
+        <div class="field-grid">
+          <div class="field field-full"><label for="solicitud-titulo">Nombre o título <span class="required-mark" aria-label="obligatorio">*</span></label><input id="solicitud-titulo" maxlength="120" required placeholder="Ej. Desarrollador backend"></div>
+          <div class="field field-full"><label for="solicitud-descripcion">Descripción breve <span class="required-mark" aria-label="obligatorio">*</span></label><textarea id="solicitud-descripcion" maxlength="500" rows="3" required placeholder="Describe el propósito del trabajo"></textarea></div>
+        </div>
+
+        <div class="request-requirements">
+          <div class="form-section-heading"><span class="section-index">01</span><div><h2>Requisitos de la oportunidad</h2><p>Clasifica cada lenguaje o herramienta como indispensable o deseable.</p></div></div>
+          <div class="catalog-grid">
+            <section class="catalog-panel language-panel" aria-labelledby="solicitud-lenguajes-heading">
+              <div class="catalog-title"><span class="catalog-icon" aria-hidden="true">&lt;/&gt;</span><div><h3 id="solicitud-lenguajes-heading">Lenguajes de programación</h3><p>Opciones del catálogo actual.</p></div></div>
+              <div class="catalog-control request-catalog-control"><label class="visually-hidden" for="solicitud-lenguaje">Lenguaje</label><select id="solicitud-lenguaje"><option value="">Selecciona un lenguaje</option></select><label class="visually-hidden" for="importancia-lenguaje">Importancia</label><select id="importancia-lenguaje"><option value="indispensable">Indispensable</option><option value="deseable">Deseable</option></select><button class="button button-small" type="button" data-add-requirement="lenguajes">Añadir</button></div>
+              <div id="requisitos-lenguajes" class="chip-list" aria-label="Requisitos de lenguajes"></div>
+            </section>
+            <section class="catalog-panel tool-panel" aria-labelledby="solicitud-herramientas-heading">
+              <div class="catalog-title"><span class="catalog-icon" aria-hidden="true">⌘</span><div><h3 id="solicitud-herramientas-heading">Herramientas</h3><p>Opciones del catálogo actual.</p></div></div>
+              <div class="catalog-control request-catalog-control"><label class="visually-hidden" for="solicitud-herramienta">Herramienta</label><select id="solicitud-herramienta"><option value="">Selecciona una herramienta</option></select><label class="visually-hidden" for="importancia-herramienta">Importancia</label><select id="importancia-herramienta"><option value="indispensable">Indispensable</option><option value="deseable">Deseable</option></select><button class="button button-small" type="button" data-add-requirement="herramientas">Añadir</button></div>
+              <div id="requisitos-herramientas" class="chip-list" aria-label="Requisitos de herramientas"></div>
+            </section>
+          </div>
+          <p class="inline-note">Añade al menos un requisito. La formación, la experiencia y los proyectos se muestran para revisión del administrador y no reciben una puntuación automática.</p>
+        </div>
+        <div class="form-actions"><p id="solicitud-form-status" class="form-stage-note" role="status" aria-live="polite">Los requisitos indispensables filtran; los deseables calculan el porcentaje.</p><button id="crear-solicitud" class="button" type="submit">Crear solicitud <span aria-hidden="true">→</span></button></div>
+      </form>
+    </section>
+
+    <section class="panel-card request-list-panel" aria-labelledby="requests-title">
+      <div class="card-heading"><div><p class="eyebrow">SOLICITUDES GUARDADAS</p><h2 id="requests-title">Consultar coincidencias</h2></div></div>
+      <p id="solicitudes-status" class="muted" role="status" aria-live="polite">Cargando solicitudes…</p>
+      <div id="solicitudes-list" class="request-list"></div>
+    </section>
+
+    <section id="coincidencias-panel" class="panel-card matches-panel" aria-labelledby="matches-title" hidden>
+      <div class="card-heading"><div><p class="eyebrow">CANDIDATOS APTOS</p><h2 id="matches-title">Resultados de coincidencia</h2></div><span id="matches-count" class="role-chip"></span></div>
+      <p id="matches-description" class="muted"></p>
+      <div id="matches-requirements" class="criteria-summary" aria-label="Requisitos de la solicitud"></div>
+      <div id="matches-list" class="matches-list"></div>
+      <div id="candidate-detail" class="candidate-detail" hidden></div>
+      <p class="privacy-footnote">El porcentaje es una referencia basada en requisitos explícitos. CodeWork no selecciona postulantes; la decisión final corresponde al administrador.</p>
+    </section>
+  </main>
+
+  <footer class="simple-footer"><a href="postulantes.html">← Volver al panel</a><span>© 2026 CodeWork</span></footer>
+  <script src="../js/api.js" defer></script>
+  <script src="../js/solicitudes.js" defer></script>
+</body>
+</html>

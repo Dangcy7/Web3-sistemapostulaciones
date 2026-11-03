@@ -41,7 +41,8 @@ async function iniciarSesion(usuario, contraseña) {
     return {
         token,
         usuario: cuenta.usuario,
-        rol: cuenta.rol
+        rol: cuenta.rol,
+        postulante_id: cuenta.postulante_id
     };
 }
 

@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#1E1F26">
+  <title>Mi perfil | CodeWork</title>
+  <link rel="icon" type="image/png" href="../assets/icons/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Google+Sans+Code:wght@400;500;600;700&family=Source+Code+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/styles.css">
+  <link rel="stylesheet" href="../css/formularios.css">
+</head>
+<body data-required-role="postulante">
+  <header class="site-header">
+    <a class="brand" href="../index.html" aria-label="CodeWork, inicio"><img src="../assets/icons/logo.png" alt=""><span>Code<span class="brand-accent">Work</span></span></a>
+    <nav class="main-nav" aria-label="Navegación principal"><a class="nav-link" href="../index.html">Inicio</a><button class="nav-link nav-link-button" type="button" data-logout>Cerrar sesión</button></nav>
+  </header>
+
+  <main class="page-width content-page">
+    <div class="page-title-row">
+      <div><p class="eyebrow">ÁREA DEL POSTULANTE</p><h1>Mi perfil profesional</h1><p class="page-lede">Consulta y mantén actualizada tu información profesional.</p></div>
+      <span class="role-chip"><span class="role-dot"></span> Perfil propio</span>
+    </div>
+
+    <p id="perfil-status" class="form-message info" role="status" aria-live="polite">Cargando tu perfil…</p>
+    <div class="profile-preview-grid">
+      <aside class="profile-summary panel-card">
+        <div class="avatar-placeholder" aria-hidden="true">CW</div>
+        <p class="eyebrow">TU PERFIL</p>
+        <h2 id="perfil-nombre-resumen">Tu perfil profesional</h2>
+        <p class="muted">Mantén actualizada la información que compartes con CodeWork.</p>
+        <div class="profile-meta"><span>Datos personales</span><span>Formación</span><span>Proyectos</span></div>
+        <div class="notice-box"><strong>Perfil privado</strong><p>Solo tú y los administradores autorizados pueden consultar esta información.</p></div>
+      </aside>
+
+      <form id="perfil-form" class="profile-sections" aria-describedby="perfil-status" novalidate>
+        <fieldset id="perfil-fields" disabled>
+          <article class="panel-card">
+            <div class="card-heading"><div><p class="eyebrow">01 / CONTACTO</p><h2>Datos personales</h2></div><span class="section-icon" aria-hidden="true">◉</span></div>
+            <div class="field-grid">
+              <div class="field"><label for="perfil-nombre">Nombre <span class="required-mark" aria-label="obligatorio">*</span></label><input id="perfil-nombre" data-personal="nombre" autocomplete="given-name" required></div>
+              <div class="field"><label for="perfil-apellido">Apellido <span class="required-mark" aria-label="obligatorio">*</span></label><input id="perfil-apellido" data-personal="apellido" autocomplete="family-name" required></div>
+              <div class="field"><label for="perfil-correo">Correo electrónico <span class="required-mark" aria-label="obligatorio">*</span></label><input id="perfil-correo" type="email" data-personal="correo" autocomplete="email" required></div>
+              <div class="field"><label for="perfil-telefono">Teléfono <span class="required-mark" aria-label="obligatorio">*</span></label><input id="perfil-telefono" type="tel" data-personal="telefono" autocomplete="tel" required></div>
+              <div class="field"><label for="perfil-ciudad">Ciudad <span class="required-mark" aria-label="obligatorio">*</span></label><input id="perfil-ciudad" data-personal="ciudad" autocomplete="address-level2" required></div>
+            </div>
+          </article>
+
+          <article class="panel-card">
+            <div class="card-heading"><div><p class="eyebrow">02 / TRAYECTORIA</p><h2>Formación académica</h2></div><span class="section-icon" aria-hidden="true">⌘</span></div>
+            <div id="perfil-formacion" class="entry-list"></div>
+            <button class="button button-outline button-small add-entry" type="button" data-add="formacion">Añadir formación</button>
+          </article>
+
+          <article class="panel-card">
+            <div class="card-heading"><div><p class="eyebrow">03 / EXPERIENCIA</p><h2>Experiencia laboral</h2></div><span class="section-icon" aria-hidden="true">⌘</span></div>
+            <div id="perfil-experiencias" class="entry-list"></div>
+            <button class="button button-outline button-small add-entry" type="button" data-add="experiencias">Añadir experiencia</button>
+          </article>
+
+          <article class="panel-card">
+            <div class="card-heading"><div><p class="eyebrow">04 / CONOCIMIENTOS</p><h2>Lenguajes y herramientas</h2></div><span class="section-icon" aria-hidden="true">&lt;/&gt;</span></div>
+            <div class="catalog-grid">
+              <section class="catalog-panel language-panel" aria-labelledby="perfil-lenguajes-titulo">
+                <div class="catalog-title"><span class="catalog-icon" aria-hidden="true">&lt;/&gt;</span><div><h3 id="perfil-lenguajes-titulo">Lenguajes de programación</h3><p>Declara tu nivel. La verificación administrativa se muestra por separado.</p></div></div>
+                <div class="catalog-control knowledge-add-control"><label class="visually-hidden" for="perfil-selector-lenguajes">Elegir lenguaje</label><select id="perfil-selector-lenguajes"><option value="">Selecciona un lenguaje</option></select><label class="visually-hidden" for="perfil-nivel-lenguajes">Nivel declarado del lenguaje</label><select id="perfil-nivel-lenguajes"><option value="">Selecciona nivel</option><option value="basico">Básico</option><option value="intermedio">Intermedio</option><option value="avanzado">Avanzado</option><option value="experto">Experto</option></select><button class="button button-small" type="button" data-add-catalog="lenguajes">Añadir</button></div>
+                <div id="perfil-chips-lenguajes" class="chip-list" aria-label="Lenguajes seleccionados"></div>
+                <p id="perfil-estado-lenguajes" class="selection-status" role="status">Aún no hay lenguajes seleccionados.</p>
+              </section>
+              <section class="catalog-panel tool-panel" aria-labelledby="perfil-herramientas-titulo">
+                <div class="catalog-title"><span class="catalog-icon" aria-hidden="true">⌘</span><div><h3 id="perfil-herramientas-titulo">Herramientas y tecnologías</h3><p>Declara tu nivel. La verificación administrativa se muestra por separado.</p></div></div>
+                <div class="catalog-control knowledge-add-control"><label class="visually-hidden" for="perfil-selector-herramientas">Elegir herramienta</label><select id="perfil-selector-herramientas"><option value="">Selecciona una herramienta</option></select><label class="visually-hidden" for="perfil-nivel-herramientas">Nivel declarado de la herramienta</label><select id="perfil-nivel-herramientas"><option value="">Selecciona nivel</option><option value="basico">Básico</option><option value="intermedio">Intermedio</option><option value="avanzado">Avanzado</option><option value="experto">Experto</option></select><button class="button button-small" type="button" data-add-catalog="herramientas">Añadir</button></div>
+                <div id="perfil-chips-herramientas" class="chip-list" aria-label="Herramientas seleccionadas"></div>
+                <p id="perfil-estado-herramientas" class="selection-status" role="status">Aún no hay herramientas seleccionadas.</p>
+              </section>
+            </div>
+          </article>
+
+          <article class="panel-card">
+            <div class="card-heading"><div><p class="eyebrow">05 / PORTAFOLIO</p><h2>Proyectos</h2></div><span class="section-icon" aria-hidden="true">◇</span></div>
+            <div id="perfil-proyectos" class="entry-list"></div>
+            <button class="button button-outline button-small add-entry" type="button" data-add="proyectos">Añadir proyecto</button>
+          </article>
+
+          <div class="form-actions profile-actions">
+            <p class="form-stage-note">Solo se actualizará el perfil asociado a tu sesión.</p>
+            <button id="perfil-save" class="button" type="submit">Guardar cambios <span aria-hidden="true">→</span></button>
+          </div>
+        </fieldset>
+      </form>
+    </div>
+  </main>
+
+  <footer class="simple-footer"><a href="../index.html">← Volver al inicio</a><span>© 2026 CodeWork</span></footer>
+  <script src="../js/api.js" defer></script>
+  <script src="../js/perfil.js" defer></script>
+</body>
+</html>

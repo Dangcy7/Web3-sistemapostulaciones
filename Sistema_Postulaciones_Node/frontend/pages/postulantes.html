@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#1E1F26">
+  <title>Postulantes | CodeWork</title>
+  <link rel="icon" type="image/png" href="../assets/icons/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Google+Sans+Code:wght@400;500;600;700&family=Source+Code+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body data-required-role="admin">
+  <header class="site-header"><a class="brand" href="../index.html" aria-label="CodeWork, inicio"><img src="../assets/icons/logo.png" alt=""><span>Code<span class="brand-accent">Work</span></span></a><nav class="main-nav" aria-label="Navegación principal"><a class="nav-link" href="../index.html">Inicio</a><a class="nav-link" href="solicitudes.html">Solicitudes</a><button class="nav-link nav-link-button" type="button" data-logout>Cerrar sesión</button></nav></header>
+  <main class="page-width content-page">
+    <div class="page-title-row"><div><p class="eyebrow">ESPACIO ADMINISTRATIVO</p><h1>Perfiles profesionales</h1><p class="page-lede">Consulta la información de postulantes para apoyar los procesos de búsqueda y selección.</p></div><span class="role-chip"><span class="role-dot"></span> Acceso administrador</span></div>
+    <section class="admin-overview panel-card"><div class="admin-overview-copy"><span class="section-icon" aria-hidden="true">⌘</span><div><p class="eyebrow">GESTIÓN DE TALENTO</p><h2>Postulantes registrados</h2><p class="muted">Consulta los perfiles disponibles en el directorio autorizado.</p></div></div><div class="admin-count"><strong id="postulantes-count" aria-live="polite">—</strong><span>perfiles</span></div></section>
+    <section class="panel-card table-panel" aria-labelledby="list-title"><div class="card-heading"><div><p class="eyebrow">DIRECTORIO PRIVADO</p><h2 id="list-title">Listado de postulantes</h2></div></div><p id="postulantes-status" class="muted" role="status" aria-live="polite">Cargando postulantes…</p><div class="table-wrap"><table><thead><tr><th scope="col">Postulante</th><th scope="col">Correo</th><th scope="col">Ciudad</th></tr></thead><tbody id="postulantes-list"></tbody></table></div><p class="privacy-footnote"><span aria-hidden="true">⌑</span> Este directorio no es público. El acceso se valida también en el servidor.</p></section>
+  </main>
+  <footer class="simple-footer"><a href="../index.html">← Volver al inicio</a><span>© 2026 CodeWork</span></footer>
+  <script src="../js/api.js" defer></script>
+  <script src="../js/postulantes.js" defer></script>
+</body>
+</html>

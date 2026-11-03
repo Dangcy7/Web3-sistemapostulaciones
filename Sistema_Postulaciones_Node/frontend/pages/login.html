@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#1E1F26">
+  <title>Iniciar sesión | CodeWork</title>
+  <link rel="icon" type="image/png" href="../assets/icons/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Google+Sans+Code:wght@400;500;600;700&family=Source+Code+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/styles.css"><link rel="stylesheet" href="../css/formularios.css">
+</head>
+<body class="auth-page">
+  <header class="site-header">
+    <a class="brand" href="../index.html" aria-label="CodeWork, inicio"><img src="../assets/icons/logo.png" alt=""><span>Code<span class="brand-accent">Work</span></span></a>
+    <nav class="main-nav" aria-label="Navegación principal"><a class="nav-link" href="../index.html">Inicio</a><a class="nav-link" href="registro.html">Crear perfil</a></nav>
+  </header>
+  <main class="auth-layout page-width">
+    <aside class="auth-aside">
+      <p class="eyebrow">QUÉ BUENO TENERTE DE VUELTA</p>
+      <h1>Tu espacio<br>profesional te <span>espera.</span></h1>
+      <p>Accede a CodeWork para gestionar tu perfil o consultar talento con tu cuenta autorizada.</p>
+      <div class="auth-aside-art"><img src="../assets/icons/logo.png" alt=""><span class="aside-orbit"></span></div>
+    </aside>
+    <section class="form-panel" aria-labelledby="login-title">
+      <div class="panel-heading"><span class="step-label">ACCESO SEGURO</span><h2 id="login-title">Iniciar sesión</h2><p>Ingresa las credenciales de tu cuenta CodeWork.</p></div>
+      <form id="login-form" class="form-stack" aria-describedby="login-stage-note">
+        <label for="usuario">Usuario</label><input id="usuario" name="usuario" type="text" autocomplete="username" placeholder="Tu nombre de usuario" aria-describedby="error-usuario" required>
+        <small class="field-error" id="error-usuario"></small>
+        <label for="contrasena">Contraseña</label><input id="contrasena" name="contrasena" type="password" autocomplete="current-password" placeholder="Tu contraseña" aria-describedby="error-contrasena" required>
+        <small class="field-error" id="error-contrasena"></small>
+        <p id="login-message" class="form-message" role="status" aria-live="polite" aria-atomic="true"></p>
+        <button id="login-submit" class="button form-submit" type="submit">Iniciar sesión <span aria-hidden="true">→</span></button>
+        <p class="form-stage-note" id="login-stage-note">Tu rol determinará a qué espacio accederás.</p>
+      </form>
+      <p class="form-switch">¿Aún no tienes cuenta? <a href="registro.html">Crea tu perfil <span aria-hidden="true">↗</span></a></p>
+    </section>
+  </main>
+  <footer class="simple-footer"><a href="../index.html">← Volver al inicio</a><span>© 2026 CodeWork</span></footer>
+  <script src="../js/api.js" defer></script>
+  <script src="../js/login.js" defer></script>
+</body>
+</html>
