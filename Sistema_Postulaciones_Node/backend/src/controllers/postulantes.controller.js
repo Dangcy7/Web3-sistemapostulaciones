@@ -6,6 +6,7 @@ function puedeAcceder(req, idPostulante) {
 
 const postulantesService = require("../services/postulantes.service");
 const { esNivelConocimientoValido } = require("../constants/niveles-conocimiento");
+const { DISPONIBILIDADES, JORNADAS, MODALIDADES, esListaValida } = require("../constants/criterios-laborales");
 
 const CAMPOS_VERIFICACION = new Set([
     "nivel_verificado",
@@ -292,7 +293,10 @@ async function actualizarPerfilCompleto(req, res) {
             experiencias,
             lenguajes,
             herramientas,
-            proyectos
+            proyectos,
+            disponibilidad,
+            jornadas,
+            modalidades
         } = req.body;
 
         const existente = await postulantesService.obtenerPorId(id);
@@ -341,6 +345,14 @@ async function actualizarPerfilCompleto(req, res) {
             }
         }
 
+        if (disponibilidad !== undefined && disponibilidad !== null && !DISPONIBILIDADES.has(disponibilidad)) {
+            return res.status(400).json({ ok: false, mensaje: "La disponibilidad indicada no es válida." });
+        }
+        if ((jornadas !== undefined && !esListaValida(jornadas, JORNADAS)) ||
+            (modalidades !== undefined && !esListaValida(modalidades, MODALIDADES))) {
+            return res.status(400).json({ ok: false, mensaje: "Revisa las jornadas y modalidades seleccionadas." });
+        }
+
         const lenguajesNormalizados = normalizarConocimientos(lenguajes, true);
         const herramientasNormalizadas = normalizarConocimientos(herramientas, true);
         if (!lenguajesNormalizados || !herramientasNormalizadas) {
@@ -360,7 +372,10 @@ async function actualizarPerfilCompleto(req, res) {
             experiencias,
             lenguajes: lenguajesNormalizados,
             herramientas: herramientasNormalizadas,
-            proyectos
+            proyectos,
+            disponibilidad,
+            jornadas,
+            modalidades
         });
 
         if (!actualizado) {
@@ -386,6 +401,9 @@ async function actualizarPerfilCompleto(req, res) {
         }
         if (error.code === "VERIFIED_KNOWLEDGE_LOCKED") {
             return res.status(409).json({ ok: false, mensaje: error.message });
+        }
+        if (error.code === "INVALID_WORK_PREFERENCES") {
+            return res.status(400).json({ ok: false, mensaje: error.message });
         }
 
         res.status(500).json({

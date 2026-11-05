@@ -1,6 +1,7 @@
 const pool = require("../config/database");
 const postulantesService = require("./postulantes.service");
 const { esNivelConocimientoValido } = require("../constants/niveles-conocimiento");
+const { evaluarPostulante, ordenarCandidatos } = require("./compatibilidad.service");
 
 const IMPORTANCIAS = new Set(["indispensable", "deseable"]);
 
@@ -24,22 +25,43 @@ async function cargarRequisitos(solicitudId) {
 
 async function obtenerSolicitudPorId(id) {
     const [filas] = await pool.execute(
-        `SELECT id, titulo, descripcion, creada_en
+        `SELECT id, titulo, descripcion, creada_en, tipo_contratacion
          FROM solicitud_trabajo WHERE id = ?`,
         [id]
     );
     if (!filas.length) return null;
-    return { ...filas[0], ...(await cargarRequisitos(id)) };
+    const [jornadas] = await pool.execute(
+        `SELECT jornada FROM solicitud_jornada WHERE solicitud_id = ? ORDER BY jornada`,
+        [id]
+    );
+    const [modalidades] = await pool.execute(
+        `SELECT modalidad FROM solicitud_modalidad WHERE solicitud_id = ? ORDER BY modalidad`,
+        [id]
+    );
+    return {
+        ...filas[0],
+        ...(await cargarRequisitos(id)),
+        jornadas: jornadas.map(item => item.jornada),
+        modalidades: modalidades.map(item => item.modalidad)
+    };
 }
 
 async function listarSolicitudes() {
     const [solicitudes] = await pool.execute(
-        `SELECT id, titulo, descripcion, creada_en
+        `SELECT id, titulo, descripcion, creada_en, tipo_contratacion
          FROM solicitud_trabajo ORDER BY creada_en DESC, id DESC`
     );
     return Promise.all(solicitudes.map(async solicitud => ({
         ...solicitud,
-        ...(await cargarRequisitos(solicitud.id))
+        ...(await cargarRequisitos(solicitud.id)),
+        jornadas: (await pool.execute(
+            `SELECT jornada FROM solicitud_jornada WHERE solicitud_id = ? ORDER BY jornada`,
+            [solicitud.id]
+        ))[0].map(item => item.jornada),
+        modalidades: (await pool.execute(
+            `SELECT modalidad FROM solicitud_modalidad WHERE solicitud_id = ? ORDER BY modalidad`,
+            [solicitud.id]
+        ))[0].map(item => item.modalidad)
     })));
 }
 
@@ -74,9 +96,9 @@ async function crearSolicitud(datos) {
     try {
         await conexion.beginTransaction();
         const [resultado] = await conexion.execute(
-            `INSERT INTO solicitud_trabajo (admin_usuario_id, titulo, descripcion)
-             VALUES (?, ?, ?)`,
-            [datos.adminUsuarioId, datos.titulo, datos.descripcion]
+            `INSERT INTO solicitud_trabajo (admin_usuario_id, titulo, descripcion, tipo_contratacion)
+             VALUES (?, ?, ?, ?)`,
+            [datos.adminUsuarioId, datos.titulo, datos.descripcion, datos.tipo_contratacion]
         );
         const solicitudId = resultado.insertId;
 
@@ -92,6 +114,18 @@ async function crearSolicitud(datos) {
                 `INSERT INTO solicitud_herramienta (solicitud_id, herramienta_id, importancia, nivel_minimo)
                  VALUES (?, ?, ?, ?)`,
                 [solicitudId, requisito.id, requisito.importancia, requisito.nivel_minimo]
+            );
+        }
+        for (const jornada of datos.jornadas) {
+            await conexion.execute(
+                `INSERT INTO solicitud_jornada (solicitud_id, jornada) VALUES (?, ?)`,
+                [solicitudId, jornada]
+            );
+        }
+        for (const modalidad of datos.modalidades) {
+            await conexion.execute(
+                `INSERT INTO solicitud_modalidad (solicitud_id, modalidad) VALUES (?, ?)`,
+                [solicitudId, modalidad]
             );
         }
 
@@ -116,53 +150,24 @@ async function obtenerCoincidencias(solicitudId) {
         postulantesService.obtenerPorId(postulante.id)
     ));
 
-    const requisitosIndispensables = [
-        ...solicitud.lenguajes.filter(item => item.importancia === "indispensable").map(item => ({ tipo: "lenguajes", id: item.id })),
-        ...solicitud.herramientas.filter(item => item.importancia === "indispensable").map(item => ({ tipo: "herramientas", id: item.id }))
-    ];
-    const requisitosDeseables = [
-        ...solicitud.lenguajes.filter(item => item.importancia === "deseable").map(item => ({ tipo: "lenguajes", id: item.id })),
-        ...solicitud.herramientas.filter(item => item.importancia === "deseable").map(item => ({ tipo: "herramientas", id: item.id }))
-    ];
-
-    const coincidencias = perfiles.flatMap(perfil => {
-        if (!perfil) return [];
-        const idsLenguajes = new Set(perfil.lenguajes.map(item => Number(item.id)));
-        const idsHerramientas = new Set(perfil.herramientas.map(item => Number(item.id)));
-        const tiene = requisito => (requisito.tipo === "lenguajes" ? idsLenguajes : idsHerramientas).has(Number(requisito.id));
-        const indispensablesCumplidos = requisitosIndispensables.filter(tiene).length;
-        if (indispensablesCumplidos !== requisitosIndispensables.length) return [];
-
-        const deseablesCumplidos = requisitosDeseables.filter(tiene).length;
-        const porcentaje = requisitosDeseables.length
-            ? Math.round((deseablesCumplidos / requisitosDeseables.length) * 100)
-            : 100;
-        return [{
-            id: perfil.id,
-            nombre: perfil.nombre,
-            apellido: perfil.apellido,
-            correo: perfil.correo,
-            ciudad: perfil.ciudad,
-            coincidencia: porcentaje,
-            deseablesCumplidos,
-            totalDeseables: requisitosDeseables.length,
-            indispensablesCumplidos,
-            totalIndispensables: requisitosIndispensables.length
-        }];
-    });
-
-    coincidencias.sort((a, b) => b.coincidencia - a.coincidencia ||
-        `${a.apellido} ${a.nombre}`.localeCompare(`${b.apellido} ${b.nombre}`, "es"));
+    const evaluados = perfiles.filter(Boolean).map(perfil => evaluarPostulante(perfil, solicitud));
+    const categorias = {
+        compatibles: ordenarCandidatos(evaluados.filter(item => item.estado === "compatible")),
+        noCumplenObligatorios: ordenarCandidatos(evaluados.filter(item => item.estado === "no_cumple_obligatorios")),
+        noDisponibles: ordenarCandidatos(evaluados.filter(item => item.estado === "no_disponible")),
+        informacionInsuficiente: ordenarCandidatos(evaluados.filter(item => item.estado === "informacion_insuficiente"))
+    };
 
     return {
         solicitud,
-        totalAptos: coincidencias.length,
+        totalAptos: categorias.compatibles.length,
         puntuacion: {
-            formula: "requisitos deseables cumplidos / total de requisitos deseables × 100",
-            reglaSinDeseables: "Un postulante que cumple todos los indispensables obtiene 100% si no hay requisitos deseables.",
-            detalle: "Cada lenguaje o herramienta deseable tiene el mismo peso. Los requisitos indispensables solo determinan aptitud. No se infieren niveles de dominio."
+            formula: "requisitos técnicos deseables cumplidos / total de requisitos técnicos deseables × 100",
+            reglaSinDeseables: "Si no hay requisitos deseables, un candidato compatible obtiene 100%; otros estados muestran el porcentaje como no disponible.",
+            detalle: "Cada requisito técnico deseable tiene el mismo peso. Los indispensables y la disponibilidad no se ocultan dentro del porcentaje. Un nivel declarado que alcanza el mínimo es provisional. La experiencia queda para revisión humana."
         },
-        postulantes: coincidencias
+        postulantes: categorias.compatibles,
+        categorias
     };
 }
 

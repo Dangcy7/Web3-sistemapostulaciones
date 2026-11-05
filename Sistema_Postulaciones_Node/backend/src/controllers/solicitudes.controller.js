@@ -1,5 +1,6 @@
 const solicitudesService = require("../services/solicitudes.service");
 const { esNivelConocimientoValido } = require("../constants/niveles-conocimiento");
+const { JORNADAS, MODALIDADES, TIPOS_CONTRATACION, esListaValida } = require("../constants/criterios-laborales");
 
 function validarListaRequisitos(lista) {
     if (!Array.isArray(lista)) return false;
@@ -8,7 +9,7 @@ function validarListaRequisitos(lista) {
         if (!item || typeof item !== "object" || Array.isArray(item)) return false;
         const id = Number(item.id);
         if (!Number.isSafeInteger(id) || id <= 0 || !solicitudesService.IMPORTANCIAS.has(item.importancia) || ids.has(id)) return false;
-        if (Object.prototype.hasOwnProperty.call(item, "nivel_minimo") && !esNivelConocimientoValido(item.nivel_minimo)) return false;
+        if (!Object.prototype.hasOwnProperty.call(item, "nivel_minimo") || !esNivelConocimientoValido(item.nivel_minimo)) return false;
         ids.add(id);
         return true;
     });
@@ -26,13 +27,18 @@ async function listar(req, res) {
 
 async function crear(req, res) {
     try {
-        const { titulo, descripcion, lenguajes, herramientas } = req.body;
+        const { titulo, descripcion, tipo_contratacion, jornadas, modalidades, lenguajes, herramientas } = req.body;
         if (typeof titulo !== "string" || !titulo.trim() || titulo.trim().length > 120 ||
             typeof descripcion !== "string" || !descripcion.trim() || descripcion.trim().length > 500) {
             return res.status(400).json({ ok: false, mensaje: "Ingresa un título y una descripción (máximo 120 y 500 caracteres)." });
         }
         if (!validarListaRequisitos(lenguajes) || !validarListaRequisitos(herramientas)) {
             return res.status(400).json({ ok: false, mensaje: "Revisa los requisitos: selecciona elementos únicos del catálogo y clasifícalos como indispensables o deseables." });
+        }
+        if (!TIPOS_CONTRATACION.has(tipo_contratacion) ||
+            !esListaValida(jornadas, JORNADAS) || jornadas.length === 0 ||
+            !esListaValida(modalidades, MODALIDADES) || modalidades.length === 0) {
+            return res.status(400).json({ ok: false, mensaje: "Indica el tipo de contratación y al menos una jornada y modalidad aceptadas." });
         }
         if (lenguajes.length + herramientas.length === 0) {
             return res.status(400).json({ ok: false, mensaje: "Añade al menos un requisito de lenguaje o herramienta." });
@@ -46,6 +52,9 @@ async function crear(req, res) {
             adminUsuarioId,
             titulo: titulo.trim(),
             descripcion: descripcion.trim(),
+            tipo_contratacion,
+            jornadas,
+            modalidades,
             lenguajes: lenguajes.map(item => ({ id: Number(item.id), importancia: item.importancia, nivel_minimo: item.nivel_minimo ?? null })),
             herramientas: herramientas.map(item => ({ id: Number(item.id), importancia: item.importancia, nivel_minimo: item.nivel_minimo ?? null }))
         });

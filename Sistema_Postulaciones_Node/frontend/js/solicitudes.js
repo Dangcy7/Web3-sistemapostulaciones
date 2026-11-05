@@ -14,6 +14,12 @@
       { id: 5, nombre: "React" }, { id: 6, nombre: "Node.js" }, { id: 7, nombre: "Flask" }
     ]
   };
+  const levels = [
+    { value: "basico", label: "Básico" },
+    { value: "intermedio", label: "Intermedio" },
+    { value: "avanzado", label: "Avanzado" },
+    { value: "experto", label: "Experto" }
+  ];
   const state = { lenguajes: [], herramientas: [] };
   const requestList = document.querySelector("#solicitudes-list");
   const requestStatus = document.querySelector("#solicitudes-status");
@@ -59,9 +65,10 @@
       chip.setAttribute("aria-label", `Quitar ${catalogItem.nombre}, ${requirement.importancia}`);
       chip.append(document.createTextNode(catalogItem.nombre));
       const importance = element("small", "requirement-chip-importance", requirement.importancia);
+      const level = element("small", "requirement-chip-level", `Mínimo: ${levels.find(item => item.value === requirement.nivel_minimo)?.label || "Sin nivel"}`);
       const removeMark = element("span", "", "×");
       removeMark.setAttribute("aria-hidden", "true");
-      chip.append(importance, removeMark);
+      chip.append(level, importance, removeMark);
       return chip;
     }).filter(Boolean);
     container.replaceChildren(...chips);
@@ -83,6 +90,89 @@
     formStatus.className = `form-stage-note form-message ${kind}`;
   }
 
+  function contractLabel(value) {
+    return ({ permanente: "Permanente", temporal: "Temporal", pasantia: "Pasantía" })[value] || "Solicitud anterior";
+  }
+
+  function arrayLabel(values, labels) {
+    return Array.isArray(values) && values.length ? values.map(value => labels[value] || value).join(", ") : "Sin criterio anterior";
+  }
+
+  function statusLabel(status) {
+    return ({
+      cumple: "Cumple",
+      cumple_provisional: "Cumple provisionalmente (declarado)",
+      no_cumple: "No cumple",
+      desconocido: "Desconocido",
+      no_disponible: "No disponible",
+      sin_criterio: "Sin criterio en esta solicitud"
+    })[status] || status;
+  }
+
+  function formatCriterion(criterion) {
+    if (criterion.tipo === "disponibilidad") return `Disponibilidad: ${statusLabel(criterion.estado)}`;
+    if (criterion.tipo === "jornada" || criterion.tipo === "modalidad") {
+      const name = criterion.tipo === "jornada" ? "Jornada" : "Modalidad";
+      const wants = (criterion.solicitadas || []).join(", ");
+      const has = (criterion.postulante || []).join(", ");
+      return `${name}: ${statusLabel(criterion.estado)}${wants ? ` · Solicitud: ${wants}` : ""}${has ? ` · Perfil: ${has}` : ""}`;
+    }
+    const actual = criterion.nivel_postulante
+      ? `Nivel ${criterion.nivel_postulante}${criterion.origen_nivel ? ` (${criterion.origen_nivel})` : ""}`
+      : "Sin nivel registrado";
+    const minimum = criterion.nivel_requerido ? ` · Mínimo ${criterion.nivel_requerido}` : "";
+    return `${criterion.requisito}: ${statusLabel(criterion.estado)} · ${actual}${minimum}`;
+  }
+
+  function addDetailedCandidateCard(candidate) {
+    const card = element("article", "match-card");
+    const heading = element("div", "match-card-heading");
+    heading.append(
+      element("h3", "", `${candidate.nombre} ${candidate.apellido}`.trim()),
+      element("strong", "match-score", candidate.coincidencia === null ? "—" : `${candidate.coincidencia}%`)
+    );
+    card.append(heading);
+    card.append(element("p", "match-candidate-state", statusLabel(candidate.estado)));
+    card.append(element("p", "muted", [candidate.correo, candidate.ciudad].filter(Boolean).join(" · ") || "Sin datos de contacto"));
+    card.append(element("p", "match-counts", candidate.coincidencia === null
+      ? "No se puede calcular el porcentaje con la información disponible."
+      : `Coincidencia técnica: ${candidate.deseablesCumplidos}/${candidate.totalDeseables} deseables.`));
+
+    const list = element("ul", "match-criteria-list");
+    (candidate.criterios || []).filter(item => item.estado !== "sin_criterio").forEach(item => {
+      const row = element("li", `criterion-${item.estado}`);
+      row.append(document.createTextNode(formatCriterion(item)));
+      if (item.explicacion) row.append(element("small", "criterion-explanation", item.explicacion));
+      list.append(row);
+    });
+    if (list.children.length) card.append(list);
+
+    const button = element("button", "button button-outline button-small", "Consultar perfil");
+    button.type = "button";
+    button.dataset.viewCandidate = String(candidate.id);
+    card.append(button);
+    return card;
+  }
+
+  function renderCandidateCategories(categorias) {
+    const definitions = [
+      ["compatibles", "Disponibles que cumplen los obligatorios", "No hay candidatos disponibles que cumplan todos los criterios obligatorios."],
+      ["noCumplenObligatorios", "No cumplen uno o más requisitos obligatorios", "Ningún perfil tiene incumplimientos obligatorios registrados."],
+      ["noDisponibles", "Postulantes no disponibles", "No hay perfiles marcados como no disponibles."],
+      ["informacionInsuficiente", "Información insuficiente para determinar compatibilidad", "No hay perfiles pendientes por información faltante."]
+    ];
+    const sections = definitions.map(([key, title, empty]) => {
+      const section = element("section", "match-category");
+      section.append(element("h3", "", `${title} (${categorias[key].length})`));
+      const grid = element("div", "match-category-grid");
+      if (categorias[key].length) grid.replaceChildren(...categorias[key].map(addDetailedCandidateCard));
+      else grid.append(element("p", "empty-row", empty));
+      section.append(grid);
+      return section;
+    });
+    matchesList.replaceChildren(...sections);
+  }
+
   function addRequirement(name) {
     const singular = name === "lenguajes" ? "lenguaje" : "herramienta";
     const select = document.querySelector(`#solicitud-${singular}`);
@@ -98,8 +188,16 @@
       return;
     }
     const importanceId = name === "lenguajes" ? "#importancia-lenguaje" : "#importancia-herramienta";
-    state[name].push({ id, importancia: document.querySelector(importanceId).value });
+    const levelId = name === "lenguajes" ? "#nivel-minimo-lenguaje" : "#nivel-minimo-herramienta";
+    const nivelMinimo = document.querySelector(levelId).value;
+    if (!levels.some(level => level.value === nivelMinimo)) {
+      setFormStatus("Selecciona el nivel mínimo del requisito.", "error");
+      document.querySelector(levelId).focus();
+      return;
+    }
+    state[name].push({ id, importancia: document.querySelector(importanceId).value, nivel_minimo: nivelMinimo });
     select.value = "";
+    document.querySelector(levelId).value = "";
     renderRequirementChips(name);
     setFormStatus("Requisito añadido. Puedes cambiar su importancia antes de crear la solicitud.", "success");
   }
@@ -113,8 +211,10 @@
       const card = element("article", "request-card");
       const copy = element("div", "request-card-copy");
       copy.append(element("h3", "", solicitud.titulo), element("p", "", solicitud.descripcion));
+      const contract = element("p", "request-contract", `Contratación: ${contractLabel(solicitud.tipo_contratacion)}`);
+      copy.append(contract);
       const counts = element("p", "request-requirement-counts",
-        `${solicitud.lenguajes.length} lenguaje${solicitud.lenguajes.length === 1 ? "" : "s"} · ${solicitud.herramientas.length} herramienta${solicitud.herramientas.length === 1 ? "" : "s"}`);
+        `${solicitud.lenguajes.length} lenguaje${solicitud.lenguajes.length === 1 ? "" : "s"} · ${solicitud.herramientas.length} herramienta${solicitud.herramientas.length === 1 ? "" : "s"} · ${arrayLabel(solicitud.jornadas, { tiempo_completo: "Tiempo completo", tiempo_parcial: "Tiempo parcial" })} · ${arrayLabel(solicitud.modalidades, { presencial: "Presencial", remoto: "Remoto", hibrido: "Híbrido" })}`);
       const button = element("button", "button button-outline button-small", "Ver coincidencias");
       button.type = "button";
       button.dataset.loadMatches = String(solicitud.id);
@@ -178,6 +278,30 @@
     matchesRequirements.replaceChildren(...blocks);
   }
 
+  function renderDetailedRequestCriteria(solicitud) {
+    const entries = [...solicitud.lenguajes, ...solicitud.herramientas];
+    const groups = [
+      { key: "indispensable", label: "Obligatorios" },
+      { key: "deseable", label: "Deseables" }
+    ].map(group => {
+      const block = element("div", `criteria-group ${group.key}`);
+      block.append(element("strong", "", group.label));
+      const selected = entries.filter(item => item.importancia === group.key);
+      block.append(element("p", "", selected.length
+        ? selected.map(item => `${item.nombre}: mínimo ${levels.find(level => level.value === item.nivel_minimo)?.label || "sin nivel"}`).join(" · ")
+        : "Ninguno"));
+      return block;
+    });
+    const job = element("div", "criteria-group criteria-job");
+    job.append(element("strong", "", "Condiciones laborales"));
+    job.append(element("p", "", [
+      `Contratación: ${contractLabel(solicitud.tipo_contratacion)}`,
+      `Jornada: ${arrayLabel(solicitud.jornadas, { tiempo_completo: "Tiempo completo", tiempo_parcial: "Tiempo parcial" })}`,
+      `Modalidad: ${arrayLabel(solicitud.modalidades, { presencial: "Presencial", remoto: "Remoto", hibrido: "Híbrido" })}`
+    ].join(" · ")));
+    matchesRequirements.replaceChildren(...groups, job);
+  }
+
   async function loadMatches(id) {
     matchesPanel.hidden = false;
     matchesList.replaceChildren(element("p", "muted", "Calculando coincidencias…"));
@@ -196,17 +320,14 @@
         return;
       }
       const result = await response.json();
-      if (result?.ok !== true || !Array.isArray(result.datos?.postulantes)) throw new Error("Respuesta de coincidencias inválida");
+      if (result?.ok !== true || !result.datos?.categorias) throw new Error("Respuesta de coincidencias inválida");
 
-      matchesCount.textContent = `${result.datos.totalAptos} aptos`;
+      const groups = result.datos.categorias;
+      matchesCount.textContent = `${result.datos.totalAptos} compatibles · ${groups.informacionInsuficiente.length} desconocidos`;
       const scoreInfo = result.datos.puntuacion;
       matchesStatus.textContent = `${result.datos.solicitud.titulo}. Puntuación: ${scoreInfo.formula}. ${scoreInfo.detalle} ${scoreInfo.reglaSinDeseables}`;
-      renderRequestCriteria(result.datos.solicitud);
-      if (!result.datos.postulantes.length) {
-        matchesList.replaceChildren(element("p", "empty-row", "No hay postulantes que cumplan todos los requisitos indispensables."));
-        return;
-      }
-      matchesList.replaceChildren(...result.datos.postulantes.map(addResultCard));
+      renderDetailedRequestCriteria(result.datos.solicitud);
+      renderCandidateCategories(groups);
     } catch {
       matchesStatus.textContent = "No fue posible conectar con el servidor para calcular coincidencias.";
       matchesList.replaceChildren();
@@ -244,10 +365,20 @@
       contact.append(item);
     });
     detailPanel.append(contact);
+    appendProfileSection(detailPanel, "Disponibilidad y preferencias", [{
+      disponibilidad: profile.disponibilidad,
+      jornadas: profile.jornadas || [],
+      modalidades: profile.modalidades || []
+    }], item => [
+      `Estado: ${item.disponibilidad === "disponible" ? "Disponible" : item.disponibilidad === "no_disponible" ? "No disponible" : "Desconocido"}`,
+      `Jornadas: ${arrayLabel(item.jornadas, { tiempo_completo: "Tiempo completo", tiempo_parcial: "Tiempo parcial" })}`,
+      `Modalidades: ${arrayLabel(item.modalidades, { presencial: "Presencial", remoto: "Remoto", hibrido: "Híbrido" })}`
+    ].join(" · "));
     appendProfileSection(detailPanel, "Formación", profile.formacion, item => [item.nivel, item.carrera, item.institucion].filter(Boolean).join(" · "));
     appendProfileSection(detailPanel, "Experiencia", profile.experiencias, item => [item.puesto, item.lugar, item.tipo, item.años_experiencia === null ? "" : `${item.años_experiencia} años`].filter(Boolean).join(" · "));
-    appendProfileSection(detailPanel, "Lenguajes", profile.lenguajes, item => item.nombre);
-    appendProfileSection(detailPanel, "Herramientas", profile.herramientas, item => item.nombre);
+    const showKnowledge = item => `${item.nombre}: declarado ${levels.find(level => level.value === item.nivel_declarado)?.label || "pendiente"}; verificado ${levels.find(level => level.value === item.nivel_verificado)?.label || "sin verificación"}${item.verificado_por_usuario ? ` por ${item.verificado_por_usuario}` : ""}`;
+    appendProfileSection(detailPanel, "Lenguajes", profile.lenguajes, showKnowledge);
+    appendProfileSection(detailPanel, "Herramientas", profile.herramientas, showKnowledge);
     appendProfileSection(detailPanel, "Proyectos", profile.proyectos, item => [item.nombre, item.descripcion, item.enlace].filter(Boolean).join(" · "));
     detailPanel.scrollIntoView({ behavior: "smooth", block: "nearest" });
   }
@@ -303,6 +434,12 @@
       setFormStatus("Añade al menos un requisito de lenguaje o herramienta.", "error");
       return;
     }
+    const jornadas = [...form.querySelectorAll("[data-request-jornada]:checked")].map(field => field.value);
+    const modalidades = [...form.querySelectorAll("[data-request-modalidad]:checked")].map(field => field.value);
+    if (!jornadas.length || !modalidades.length) {
+      setFormStatus("Selecciona al menos una jornada y una modalidad aceptadas.", "error");
+      return;
+    }
 
     createButton.disabled = true;
     createButton.textContent = "Guardando solicitud…";
@@ -310,6 +447,9 @@
     const payload = {
       titulo: document.querySelector("#solicitud-titulo").value.trim(),
       descripcion: document.querySelector("#solicitud-descripcion").value.trim(),
+      tipo_contratacion: document.querySelector("#solicitud-tipo-contratacion").value,
+      jornadas,
+      modalidades,
       lenguajes: [...state.lenguajes],
       herramientas: [...state.herramientas]
     };

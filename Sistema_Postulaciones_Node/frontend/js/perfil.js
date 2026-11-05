@@ -330,6 +330,13 @@
       const field = form.querySelector(`[data-personal="${key}"]`);
       field.value = typeof profile[key] === "string" ? profile[key] : "";
     });
+    form.querySelector("[data-availability]").value = profile.disponibilidad || "";
+    form.querySelectorAll("[data-jornada]").forEach(field => {
+      field.checked = Array.isArray(profile.jornadas) && profile.jornadas.includes(field.value);
+    });
+    form.querySelectorAll("[data-modalidad]").forEach(field => {
+      field.checked = Array.isArray(profile.modalidades) && profile.modalidades.includes(field.value);
+    });
     state.formacion = profile.formacion.map(item => ({ uid: nextEntryId++, nivel: item.nivel || "", carrera: item.carrera || "", institucion: item.institucion || "" }));
     state.experiencias = profile.experiencias.map(item => ({ uid: nextEntryId++, lugar: item.lugar || "", puesto: item.puesto || "", tipo: item.tipo || "", años_experiencia: item.años_experiencia ?? "" }));
     state.proyectos = profile.proyectos.map(item => ({ uid: nextEntryId++, nombre: item.nombre || "", enlace: item.enlace || "", descripcion: item.descripcion || "" }));
@@ -362,6 +369,9 @@
     form.querySelectorAll("[data-personal]").forEach(field => {
       data[field.dataset.personal] = field.value.trim();
     });
+    data.disponibilidad = form.querySelector("[data-availability]").value || null;
+    data.jornadas = [...form.querySelectorAll("[data-jornada]:checked")].map(field => field.value);
+    data.modalidades = [...form.querySelectorAll("[data-modalidad]:checked")].map(field => field.value);
     data.formacion = state.formacion.map(({ nivel, carrera, institucion }) => ({ nivel, carrera: carrera.trim(), institucion: institucion.trim() }));
     data.experiencias = state.experiencias.map(({ lugar, puesto, tipo, años_experiencia }) => ({
       lugar: lugar.trim(), puesto: puesto.trim(), tipo: tipo.trim(), años_experiencia: Number(años_experiencia)

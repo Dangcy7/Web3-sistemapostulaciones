@@ -25,7 +25,7 @@ async function correoExiste(correo) {
 // Obtener el perfil completo de un postulante
 async function obtenerPorId(id) {
     const [postulantes] = await pool.execute(
-        `SELECT id, nombre, apellido, telefono, correo, ciudad
+        `SELECT id, nombre, apellido, telefono, correo, ciudad, disponibilidad
          FROM postulante
          WHERE id = ?`,
         [id]
@@ -86,12 +86,24 @@ async function obtenerPorId(id) {
         [id]
     );
 
+    const [jornadas] = await pool.execute(
+        `SELECT jornada FROM postulante_jornada WHERE postulante_id = ? ORDER BY jornada`,
+        [id]
+    );
+
+    const [modalidades] = await pool.execute(
+        `SELECT modalidad FROM postulante_modalidad WHERE postulante_id = ? ORDER BY modalidad`,
+        [id]
+    );
+
     return {
         ...postulante,
         formacion,
         experiencias,
         lenguajes,
         herramientas,
+        jornadas: jornadas.map(item => item.jornada),
+        modalidades: modalidades.map(item => item.modalidad),
         proyectos
     };
 }
@@ -236,7 +248,7 @@ async function actualizarPerfilCompleto(id, datos) {
         await conexion.beginTransaction();
 
         const [existentes] = await conexion.execute(
-            `SELECT id FROM postulante WHERE id = ? FOR UPDATE`,
+            `SELECT id, disponibilidad FROM postulante WHERE id = ? FOR UPDATE`,
             [id]
         );
 
@@ -255,17 +267,31 @@ async function actualizarPerfilCompleto(id, datos) {
             experiencias = [],
             lenguajes = [],
             herramientas = [],
-            proyectos = []
+            proyectos = [],
+            disponibilidad,
+            jornadas,
+            modalidades
         } = datos;
+
+        const disponibilidadActualizada = disponibilidad === undefined
+            ? existentes[0].disponibilidad
+            : disponibilidad;
 
         // 1. Actualizar datos personales
         await conexion.execute(
             `UPDATE postulante
              SET nombre = ?, apellido = ?, telefono = ?,
-                 correo = ?, ciudad = ?
+                 correo = ?, ciudad = ?, disponibilidad = ?
              WHERE id = ?`,
-            [nombre, apellido, telefono, correo, ciudad, id]
+            [nombre, apellido, telefono, correo, ciudad, disponibilidadActualizada, id]
         );
+
+        if (jornadas !== undefined) {
+            await sincronizarPreferencias(conexion, "postulante_jornada", "jornada", "postulante_id", id, jornadas);
+        }
+        if (modalidades !== undefined) {
+            await sincronizarPreferencias(conexion, "postulante_modalidad", "modalidad", "postulante_id", id, modalidades);
+        }
 
         // 2. Eliminar información profesional anterior
         await conexion.execute(
@@ -419,6 +445,24 @@ async function sincronizarConocimientos(conexion, configuracion) {
             `INSERT INTO ${tabla} (postulante_id, ${columnaCatalogo}, nivel_declarado)
              VALUES (?, ?, ?)`,
             [postulanteId, conocimientoId, nivel ?? null]
+        );
+    }
+}
+
+async function sincronizarPreferencias(conexion, tabla, columna, columnaPerfil, perfilId, valores) {
+    const configuraciones = {
+        postulante_jornada: { columna: "jornada", perfil: "postulante_id" },
+        postulante_modalidad: { columna: "modalidad", perfil: "postulante_id" }
+    };
+    const permitida = configuraciones[tabla];
+    if (!permitida || permitida.columna !== columna || permitida.perfil !== columnaPerfil) {
+        throw new Error("Configuración de preferencias no permitida");
+    }
+    await conexion.execute(`DELETE FROM ${tabla} WHERE ${columnaPerfil} = ?`, [perfilId]);
+    for (const valor of valores) {
+        await conexion.execute(
+            `INSERT INTO ${tabla} (${columnaPerfil}, ${columna}) VALUES (?, ?)`,
+            [perfilId, valor]
         );
     }
 }
