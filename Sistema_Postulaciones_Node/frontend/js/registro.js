@@ -2,25 +2,8 @@
   const form = document.querySelector("#registro-postulante");
   if (!form) return;
 
-  // Catálogos copiados del SQL vigente. Sus IDs son los que espera el backend.
-  const catalogs = {
-    lenguajes: [
-      { id: 1, nombre: "Python" },
-      { id: 2, nombre: "Java" },
-      { id: 3, nombre: "JavaScript" },
-      { id: 4, nombre: "C++" },
-      { id: 5, nombre: "PHP" }
-    ],
-    herramientas: [
-      { id: 1, nombre: "Git" },
-      { id: 2, nombre: "GitHub" },
-      { id: 3, nombre: "Docker" },
-      { id: 4, nombre: "MySQL" },
-      { id: 5, nombre: "React" },
-      { id: 6, nombre: "Node.js" },
-      { id: 7, nombre: "Flask" }
-    ]
-  };
+  // Estos catálogos se cargan de la base de datos al iniciar el formulario.
+  const catalogs = { lenguajes: [], herramientas: [] };
 
   const knowledgeLevels = [
     { value: "basico", label: "Básico" },
@@ -154,6 +137,21 @@
     select.innerHTML = `<option value="">${label}</option>` + catalogs[name]
       .map(item => `<option value="${item.id}">${escapeHTML(item.nombre)}</option>`)
       .join("");
+  }
+
+  async function loadCatalogs() {
+    const response = await fetch("/api/catalogos/conocimientos", { headers: { Accept: "application/json" } });
+    if (!response.ok) throw new Error("No se pudieron cargar los catálogos");
+    const result = await response.json();
+    if (result?.ok !== true || !Array.isArray(result.datos?.lenguajes) || !Array.isArray(result.datos?.herramientas)) {
+      throw new Error("Respuesta de catálogos inválida");
+    }
+    Object.assign(catalogs, result.datos);
+    Object.keys(catalogs).forEach(name => {
+      renderCatalogOptions(name);
+      renderChips(name);
+    });
+    form.querySelectorAll("[data-add-catalog]").forEach(button => { button.disabled = false; });
   }
 
   function renderChips(name) {
@@ -447,14 +445,12 @@
   }
 
   Object.keys(containers).forEach(renderCollection);
-  Object.keys(catalogs).forEach(name => {
-    renderCatalogOptions(name);
-    renderChips(name);
-  });
+  form.querySelectorAll("[data-add-catalog]").forEach(button => { button.disabled = true; });
   form.querySelectorAll("[data-progress-field]").forEach(field => {
     field.addEventListener("blur", () => {
       if (form.classList.contains("was-validated") || field.value) updateFieldError(field);
     });
   });
   updateProgress();
+  loadCatalogs().catch(() => announce("No se pudieron cargar los catálogos de conocimientos. Actualiza la página e inténtalo de nuevo.", "error"));
 })();

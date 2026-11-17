@@ -142,3 +142,20 @@
   .entry-card-footer { align-items: flex-start; flex-direction: column; }
   .required-key { margin-top: 17px; }
 }
+.knowledge-checkboxes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .55rem 1rem;
+  padding: .9rem;
+}
+
+.knowledge-option {
+  display: inline-flex;
+  align-items: center;
+  gap: .45rem;
+  cursor: pointer;
+}
+
+.knowledge-option input {
+  accent-color: var(--color-accent, #5b8def);
+}

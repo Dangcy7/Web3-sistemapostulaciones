@@ -1,6 +1,31 @@
 
 const pool = require("../config/database");
 const bcrypt = require("bcrypt");
+const { filtrarYOrdenarPostulantes } = require("./busqueda-postulantes.service");
+
+async function listarCatalogosConocimientos() {
+    const [[lenguajes], [herramientas]] = await Promise.all([
+        pool.execute(`SELECT id, nombre FROM lenguaje ORDER BY nombre`),
+        pool.execute(`SELECT id, nombre FROM herramienta ORDER BY nombre`)
+    ]);
+    return { lenguajes, herramientas };
+}
+
+async function validarCatalogosConocimientos(filtros) {
+    for (const [tabla, ids] of [["lenguaje", filtros.lenguajes], ["herramienta", filtros.herramientas]]) {
+        if (!ids.length) continue;
+        const placeholders = ids.map(() => "?").join(", ");
+        const [filas] = await pool.execute(`SELECT id FROM ${tabla} WHERE id IN (${placeholders})`, ids);
+        if (filas.length !== ids.length) return false;
+    }
+    return true;
+}
+
+async function buscarPostulantes(filtros) {
+    const [filas] = await pool.execute(`SELECT id FROM postulante ORDER BY id`);
+    const perfiles = await Promise.all(filas.map(({ id }) => obtenerPorId(id)));
+    return filtrarYOrdenarPostulantes(perfiles.filter(Boolean), filtros);
+}
 
 // Obtener todos los postulantes
 async function obtenerTodos() {
@@ -542,6 +567,9 @@ async function retirarVerificacionConocimiento({ postulanteId, tipo, catalogoId 
 }
 
 module.exports = {
+    listarCatalogosConocimientos,
+    validarCatalogosConocimientos,
+    buscarPostulantes,
     obtenerTodos,
     correoExiste,
     obtenerPorId,

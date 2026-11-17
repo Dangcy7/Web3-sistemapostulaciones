@@ -11,6 +11,7 @@ const authRoutes = require("./routes/auth.routes");
 
 const postulantesRoutes = require("./routes/postulantes.routes");
 const solicitudesRoutes = require("./routes/solicitudes.routes");
+const catalogosRoutes = require("./routes/catalogos.routes");
 
 
 app.use(express.json());
@@ -23,6 +24,7 @@ app.get("/api/health", (req, res) => {
 });
 
 app.use("/api/postulantes", postulantesRoutes);
+app.use("/api/catalogos", catalogosRoutes);
 app.use("/api/solicitudes", solicitudesRoutes);
 app.use("/api/auth", authRoutes);
 

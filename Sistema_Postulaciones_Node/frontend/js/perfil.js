@@ -16,17 +16,7 @@
     return;
   }
 
-  const catalogs = {
-    lenguajes: [
-      { id: 1, nombre: "Python" }, { id: 2, nombre: "Java" },
-      { id: 3, nombre: "JavaScript" }, { id: 4, nombre: "C++" }, { id: 5, nombre: "PHP" }
-    ],
-    herramientas: [
-      { id: 1, nombre: "Git" }, { id: 2, nombre: "GitHub" },
-      { id: 3, nombre: "Docker" }, { id: 4, nombre: "MySQL" },
-      { id: 5, nombre: "React" }, { id: 6, nombre: "Node.js" }, { id: 7, nombre: "Flask" }
-    ]
-  };
+  const catalogs = { lenguajes: [], herramientas: [] };
   const knowledgeLevels = [
     { value: "basico", label: "Básico" },
     { value: "intermedio", label: "Intermedio" },
@@ -211,6 +201,16 @@
     });
   }
 
+  async function loadCatalogs() {
+    const response = await fetch("/api/catalogos/conocimientos", { headers: { Accept: "application/json" } });
+    if (!response.ok) throw new Error("No se pudieron cargar los catálogos");
+    const result = await response.json();
+    if (result?.ok !== true || !Array.isArray(result.datos?.lenguajes) || !Array.isArray(result.datos?.herramientas)) {
+      throw new Error("Respuesta de catálogos inválida");
+    }
+    Object.assign(catalogs, result.datos);
+  }
+
   function renderChips(name) {
     const container = document.querySelector(`#perfil-chips-${name}`);
     const statusText = document.querySelector(`#perfil-estado-${name}`);
@@ -389,6 +389,7 @@
 
   async function loadProfile() {
     try {
+      await loadCatalogs();
       const response = await sessionApi.authorizedFetch(`/api/postulantes/${postulanteId}`);
       if (response.status === 401) return redirectForAuthFailure();
       if (response.status === 403) {

@@ -5,6 +5,7 @@ const router = express.Router();
 
 const {
     listarPostulantes,
+    buscarPostulantes,
     obtenerDetalle,
     crearPostulante,
     crearPerfilCompleto,
@@ -14,6 +15,7 @@ const {
 } = require("../controllers/postulantes.controller");
 
 router.get("/", verificarToken, verificarAdmin, listarPostulantes);
+router.post("/buscar", verificarToken, verificarAdmin, buscarPostulantes);
 
 router.post("/", crearPostulante);
 router.post("/completo", crearPerfilCompleto);

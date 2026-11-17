@@ -69,6 +69,46 @@ async function listarPostulantes(req, res) {
     }
 }
 
+async function listarCatalogosBusqueda(req, res) {
+    try {
+        res.json({ ok: true, datos: await postulantesService.listarCatalogosConocimientos() });
+    } catch (error) {
+        console.error("Error al consultar catálogos de conocimientos:", error.message);
+        res.status(500).json({ ok: false, mensaje: "No se pudieron consultar los catálogos." });
+    }
+}
+
+function validarIds(lista) {
+    return Array.isArray(lista) && new Set(lista).size === lista.length &&
+        lista.every(id => Number.isSafeInteger(id) && id > 0);
+}
+
+async function buscarPostulantes(req, res) {
+    const body = req.body || {};
+    const filtros = {
+        lenguajes: body.lenguajes,
+        herramientas: body.herramientas,
+        soloDisponibles: body.solo_disponibles,
+        jornadas: body.jornadas,
+        modalidades: body.modalidades
+    };
+    if (!validarIds(filtros.lenguajes) || !validarIds(filtros.herramientas) ||
+        typeof filtros.soloDisponibles !== "boolean" ||
+        !esListaValida(filtros.jornadas, JORNADAS) || !esListaValida(filtros.modalidades, MODALIDADES)) {
+        return res.status(400).json({ ok: false, mensaje: "Revisa los filtros seleccionados." });
+    }
+    try {
+        if (!(await postulantesService.validarCatalogosConocimientos(filtros))) {
+            return res.status(400).json({ ok: false, mensaje: "Uno o más conocimientos no existen en los catálogos." });
+        }
+        const datos = await postulantesService.buscarPostulantes(filtros);
+        res.json({ ok: true, total: datos.length, datos });
+    } catch (error) {
+        console.error("Error al buscar postulantes:", error.message);
+        res.status(500).json({ ok: false, mensaje: "No se pudo realizar la búsqueda." });
+    }
+}
+
 
 
 async function obtenerDetalle(req, res) {
@@ -484,6 +524,8 @@ async function retirarVerificacionNivelConocimiento(req, res) {
 
 module.exports = {
     listarPostulantes,
+    listarCatalogosBusqueda,
+    buscarPostulantes,
     obtenerDetalle,
     crearPostulante,
     crearPerfilCompleto,
