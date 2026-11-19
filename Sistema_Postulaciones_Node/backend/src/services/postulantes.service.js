@@ -22,7 +22,28 @@ async function validarCatalogosConocimientos(filtros) {
 }
 
 async function buscarPostulantes(filtros) {
-    const [filas] = await pool.execute(`SELECT id FROM postulante ORDER BY id`);
+    const condiciones = [];
+    const parametros = [];
+    if (filtros.soloDisponibles) condiciones.push(`p.disponibilidad = 'disponible'`);
+    if (filtros.lenguajes.length || filtros.herramientas.length) {
+        const alternativas = [];
+        if (filtros.lenguajes.length) {
+            alternativas.push(`EXISTS (SELECT 1 FROM postulante_lenguaje pl WHERE pl.postulante_id = p.id AND pl.lenguaje_id IN (${filtros.lenguajes.map(() => "?").join(", ")}))`);
+            parametros.push(...filtros.lenguajes);
+        }
+        if (filtros.herramientas.length) {
+            alternativas.push(`EXISTS (SELECT 1 FROM postulante_herramienta ph WHERE ph.postulante_id = p.id AND ph.herramienta_id IN (${filtros.herramientas.map(() => "?").join(", ")}))`);
+            parametros.push(...filtros.herramientas);
+        }
+        condiciones.push(`(${alternativas.join(" OR ")})`);
+    }
+    for (const [table, column, values] of [["postulante_jornada", "jornada", filtros.jornadas], ["postulante_modalidad", "modalidad", filtros.modalidades]]) {
+        if (!values.length) continue;
+        condiciones.push(`EXISTS (SELECT 1 FROM ${table} pref WHERE pref.postulante_id = p.id AND pref.${column} IN (${values.map(() => "?").join(", ")}))`);
+        parametros.push(...values);
+    }
+    const where = condiciones.length ? `WHERE ${condiciones.join(" AND ")}` : "";
+    const [filas] = await pool.execute(`SELECT p.id FROM postulante p ${where} ORDER BY p.id`, parametros);
     const perfiles = await Promise.all(filas.map(({ id }) => obtenerPorId(id)));
     return filtrarYOrdenarPostulantes(perfiles.filter(Boolean), filtros);
 }

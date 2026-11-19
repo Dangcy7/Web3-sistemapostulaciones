@@ -110,18 +110,27 @@ async function mias(req, res) {
 async function estado(req, res) {
     const id = Number(req.params.id), value = req.body.estado;
     if (!Number.isSafeInteger(id) || id <= 0 || !["borrador", "publicada", "cerrada"].includes(value)) return res.status(400).json({ ok: false, mensaje: "Estado de oferta inválido." });
-    try { if (!(await solicitudesService.cambiarEstado(id, value))) return res.status(404).json({ ok: false, mensaje: "Oferta no encontrada." }); res.json({ ok: true }); }
+    try { if (!(await solicitudesService.cambiarEstado(id, value))) return res.status(404).json({ ok: false, mensaje: "Oferta no encontrada." }); res.json({ ok: true, datos: { estado: value } }); }
     catch (error) { console.error(error.message); res.status(500).json({ ok: false, mensaje: "No se pudo actualizar la oferta." }); }
 }
 
 async function actualizar(req, res) {
-    const id = Number(req.params.id), { titulo, descripcion } = req.body || {};
+    const id = Number(req.params.id), { titulo, descripcion, tipo_contratacion, jornadas, modalidades, lenguajes, herramientas } = req.body || {};
     if (!Number.isSafeInteger(id) || id <= 0 || typeof titulo !== "string" || !titulo.trim() || titulo.trim().length > 120 || typeof descripcion !== "string" || !descripcion.trim() || descripcion.trim().length > 500)
         return res.status(400).json({ ok: false, mensaje: "El título y la descripción son obligatorios (máximo 120 y 500 caracteres)." });
+    if (!TIPOS_CONTRATACION.has(tipo_contratacion) || !esListaValida(jornadas, JORNADAS) || !jornadas.length || !esListaValida(modalidades, MODALIDADES) || !modalidades.length || !validarListaRequisitos(lenguajes) || !validarListaRequisitos(herramientas))
+        return res.status(400).json({ ok: false, mensaje: "Revisa el tipo de contratación, jornadas, modalidades y conocimientos seleccionados." });
     try {
-        if (!(await solicitudesService.actualizarSolicitud(id, { titulo: titulo.trim(), descripcion: descripcion.trim() }))) return res.status(404).json({ ok: false, mensaje: "Oferta no encontrada." });
+        if (!(await solicitudesService.actualizarSolicitud(id, {
+            titulo: titulo.trim(), descripcion: descripcion.trim(), tipo_contratacion, jornadas, modalidades,
+            lenguajes: lenguajes.map(item => ({ id: Number(item.id), importancia: "indispensable", nivel_minimo: null })),
+            herramientas: herramientas.map(item => ({ id: Number(item.id), importancia: "indispensable", nivel_minimo: null }))
+        }))) return res.status(404).json({ ok: false, mensaje: "Oferta no encontrada." });
         res.json({ ok: true, mensaje: "Oferta actualizada." });
-    } catch (error) { console.error(error.message); res.status(500).json({ ok: false, mensaje: "No se pudo actualizar la oferta." }); }
+    } catch (error) {
+        if (error.code === "INVALID_CATALOG_ITEM") return res.status(400).json({ ok: false, mensaje: error.message });
+        console.error(error.message); res.status(500).json({ ok: false, mensaje: "No se pudo actualizar la oferta." });
+    }
 }
 
 async function candidaturas(req, res) {
@@ -134,7 +143,7 @@ async function candidaturas(req, res) {
 async function estadoCandidatura(req, res) {
     const id = Number(req.params.id), estado = req.body.estado;
     if (!Number.isSafeInteger(id) || id <= 0 || !["pendiente", "en_revision", "aceptada", "rechazada"].includes(estado)) return res.status(400).json({ ok: false, mensaje: "Estado de candidatura inválido." });
-    try { if (!(await solicitudesService.cambiarEstadoCandidatura(id, estado))) return res.status(404).json({ ok: false, mensaje: "Candidatura no encontrada." }); res.json({ ok: true }); }
+    try { if (!(await solicitudesService.cambiarEstadoCandidatura(id, estado))) return res.status(404).json({ ok: false, mensaje: "Candidatura no encontrada." }); res.json({ ok: true, datos: { estado } }); }
     catch (error) { console.error(error.message); res.status(500).json({ ok: false, mensaje: "No se pudo actualizar la candidatura." }); }
 }
 

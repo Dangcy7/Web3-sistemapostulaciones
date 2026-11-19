@@ -153,24 +153,61 @@ async function cambiarEstado(solicitudId, estado) {
     return result.affectedRows > 0;
 }
 
-async function actualizarSolicitud(solicitudId, { titulo, descripcion }) {
-    const [result] = await pool.execute(`UPDATE solicitud_trabajo SET titulo = ?, descripcion = ? WHERE id = ?`, [titulo, descripcion, solicitudId]);
-    return result.affectedRows > 0;
+async function actualizarSolicitud(solicitudId, datos) {
+    if (!(await comprobarCatalogos(datos))) {
+        const error = new Error("Uno o más elementos no existen en los catálogos actuales");
+        error.code = "INVALID_CATALOG_ITEM";
+        throw error;
+    }
+    const conexion = await pool.getConnection();
+    try {
+        await conexion.beginTransaction();
+        const [existentes] = await conexion.execute(`SELECT id FROM solicitud_trabajo WHERE id = ? FOR UPDATE`, [solicitudId]);
+        if (!existentes.length) { await conexion.rollback(); return false; }
+        await conexion.execute(`UPDATE solicitud_trabajo SET titulo = ?, descripcion = ?, tipo_contratacion = ? WHERE id = ?`,
+            [datos.titulo, datos.descripcion, datos.tipo_contratacion, solicitudId]);
+        for (const [table, column, values] of [
+            ["solicitud_lenguaje", "lenguaje_id", datos.lenguajes],
+            ["solicitud_herramienta", "herramienta_id", datos.herramientas],
+            ["solicitud_jornada", "jornada", datos.jornadas],
+            ["solicitud_modalidad", "modalidad", datos.modalidades]
+        ]) {
+            await conexion.execute(`DELETE FROM ${table} WHERE solicitud_id = ?`, [solicitudId]);
+            for (const value of values) {
+                const id = typeof value === "object" ? value.id : value;
+                const importance = typeof value === "object" ? (value.importancia || "indispensable") : "indispensable";
+                const level = typeof value === "object" ? (value.nivel_minimo ?? null) : null;
+                if (table === "solicitud_lenguaje" || table === "solicitud_herramienta") {
+                    await conexion.execute(`INSERT INTO ${table} (solicitud_id, ${column}, importancia, nivel_minimo) VALUES (?, ?, ?, ?)`,
+                        [solicitudId, id, importance, level]);
+                } else {
+                    await conexion.execute(`INSERT INTO ${table} (solicitud_id, ${column}) VALUES (?, ?)`, [solicitudId, id]);
+                }
+            }
+        }
+        await conexion.commit();
+        return true;
+    } catch (error) { await conexion.rollback(); throw error; }
+    finally { conexion.release(); }
 }
 
 async function postularse(ofertaId, postulanteId) {
-    const [oferta] = await pool.execute(`SELECT estado_publicacion FROM solicitud_trabajo WHERE id = ?`, [ofertaId]);
-    if (!oferta.length) return { error: "NOT_FOUND" };
-    if (oferta[0].estado_publicacion !== "publicada") return { error: "CLOSED" };
-    const [perfil] = await pool.execute(`SELECT id FROM postulante WHERE id = ?`, [postulanteId]);
-    if (!perfil.length) return { error: "PROFILE_NOT_FOUND" };
+    const conexion = await pool.getConnection();
     try {
-        const [result] = await pool.execute(`INSERT INTO candidatura (solicitud_id, postulante_id) VALUES (?, ?)`, [ofertaId, postulanteId]);
+        await conexion.beginTransaction();
+        const [oferta] = await conexion.execute(`SELECT estado_publicacion FROM solicitud_trabajo WHERE id = ? FOR UPDATE`, [ofertaId]);
+        if (!oferta.length) { await conexion.rollback(); return { error: "NOT_FOUND" }; }
+        if (oferta[0].estado_publicacion !== "publicada") { await conexion.rollback(); return { error: "CLOSED" }; }
+        const [perfil] = await conexion.execute(`SELECT id FROM postulante WHERE id = ?`, [postulanteId]);
+        if (!perfil.length) { await conexion.rollback(); return { error: "PROFILE_NOT_FOUND" }; }
+        const [result] = await conexion.execute(`INSERT INTO candidatura (solicitud_id, postulante_id) VALUES (?, ?)`, [ofertaId, postulanteId]);
+        await conexion.commit();
         return { id: result.insertId };
     } catch (error) {
+        await conexion.rollback();
         if (error.code === "ER_DUP_ENTRY") return { error: "DUPLICATE" };
         throw error;
-    }
+    } finally { conexion.release(); }
 }
 
 async function misCandidaturas(postulanteId) {
