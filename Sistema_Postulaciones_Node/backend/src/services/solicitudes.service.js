@@ -25,7 +25,7 @@ async function cargarRequisitos(solicitudId) {
 
 async function obtenerSolicitudPorId(id) {
     const [filas] = await pool.execute(
-        `SELECT id, titulo, descripcion, creada_en, tipo_contratacion
+        `SELECT id, titulo, descripcion, creada_en, tipo_contratacion, estado_publicacion
          FROM solicitud_trabajo WHERE id = ?`,
         [id]
     );
@@ -48,7 +48,7 @@ async function obtenerSolicitudPorId(id) {
 
 async function listarSolicitudes() {
     const [solicitudes] = await pool.execute(
-        `SELECT id, titulo, descripcion, creada_en, tipo_contratacion
+        `SELECT id, titulo, descripcion, creada_en, tipo_contratacion, estado_publicacion
          FROM solicitud_trabajo ORDER BY creada_en DESC, id DESC`
     );
     return Promise.all(solicitudes.map(async solicitud => ({
@@ -96,9 +96,9 @@ async function crearSolicitud(datos) {
     try {
         await conexion.beginTransaction();
         const [resultado] = await conexion.execute(
-            `INSERT INTO solicitud_trabajo (admin_usuario_id, titulo, descripcion, tipo_contratacion)
-             VALUES (?, ?, ?, ?)`,
-            [datos.adminUsuarioId, datos.titulo, datos.descripcion, datos.tipo_contratacion]
+            `INSERT INTO solicitud_trabajo (admin_usuario_id, titulo, descripcion, tipo_contratacion, estado_publicacion)
+             VALUES (?, ?, ?, ?, ?)`,
+            [datos.adminUsuarioId, datos.titulo, datos.descripcion, datos.tipo_contratacion, datos.estado_publicacion || "borrador"]
         );
         const solicitudId = resultado.insertId;
 
@@ -139,6 +139,59 @@ async function crearSolicitud(datos) {
     }
 }
 
+async function listarPublicadas() {
+    const [rows] = await pool.execute(`SELECT id, titulo, descripcion, creada_en, tipo_contratacion
+        FROM solicitud_trabajo WHERE estado_publicacion = 'publicada' ORDER BY creada_en DESC, id DESC`);
+    return Promise.all(rows.map(async row => ({ ...row, ...(await cargarRequisitos(row.id)),
+        jornadas: (await pool.execute(`SELECT jornada FROM solicitud_jornada WHERE solicitud_id = ? ORDER BY jornada`, [row.id]))[0].map(x => x.jornada),
+        modalidades: (await pool.execute(`SELECT modalidad FROM solicitud_modalidad WHERE solicitud_id = ? ORDER BY modalidad`, [row.id]))[0].map(x => x.modalidad)
+    })));
+}
+
+async function cambiarEstado(solicitudId, estado) {
+    const [result] = await pool.execute(`UPDATE solicitud_trabajo SET estado_publicacion = ? WHERE id = ?`, [estado, solicitudId]);
+    return result.affectedRows > 0;
+}
+
+async function actualizarSolicitud(solicitudId, { titulo, descripcion }) {
+    const [result] = await pool.execute(`UPDATE solicitud_trabajo SET titulo = ?, descripcion = ? WHERE id = ?`, [titulo, descripcion, solicitudId]);
+    return result.affectedRows > 0;
+}
+
+async function postularse(ofertaId, postulanteId) {
+    const [oferta] = await pool.execute(`SELECT estado_publicacion FROM solicitud_trabajo WHERE id = ?`, [ofertaId]);
+    if (!oferta.length) return { error: "NOT_FOUND" };
+    if (oferta[0].estado_publicacion !== "publicada") return { error: "CLOSED" };
+    const [perfil] = await pool.execute(`SELECT id FROM postulante WHERE id = ?`, [postulanteId]);
+    if (!perfil.length) return { error: "PROFILE_NOT_FOUND" };
+    try {
+        const [result] = await pool.execute(`INSERT INTO candidatura (solicitud_id, postulante_id) VALUES (?, ?)`, [ofertaId, postulanteId]);
+        return { id: result.insertId };
+    } catch (error) {
+        if (error.code === "ER_DUP_ENTRY") return { error: "DUPLICATE" };
+        throw error;
+    }
+}
+
+async function misCandidaturas(postulanteId) {
+    const [rows] = await pool.execute(`SELECT c.id, c.solicitud_id, c.estado, c.postulada_en, s.titulo, s.descripcion, s.tipo_contratacion
+        FROM candidatura c INNER JOIN solicitud_trabajo s ON s.id = c.solicitud_id
+        WHERE c.postulante_id = ? ORDER BY c.postulada_en DESC`, [postulanteId]);
+    return rows;
+}
+
+async function listarCandidaturas(solicitudId) {
+    const [rows] = await pool.execute(`SELECT c.id, c.postulante_id, c.estado, c.postulada_en,
+        p.nombre, p.apellido, p.correo, p.ciudad FROM candidatura c
+        INNER JOIN postulante p ON p.id = c.postulante_id WHERE c.solicitud_id = ? ORDER BY c.postulada_en DESC`, [solicitudId]);
+    return rows;
+}
+
+async function cambiarEstadoCandidatura(id, estado) {
+    const [r] = await pool.execute(`UPDATE candidatura SET estado = ? WHERE id = ?`, [estado, id]);
+    return r.affectedRows > 0;
+}
+
 async function obtenerCoincidencias(solicitudId) {
     const solicitud = await obtenerSolicitudPorId(solicitudId);
     if (!solicitud) return null;
@@ -171,4 +224,5 @@ async function obtenerCoincidencias(solicitudId) {
     };
 }
 
-module.exports = { listarSolicitudes, crearSolicitud, obtenerCoincidencias, IMPORTANCIAS };
+module.exports = { listarSolicitudes, crearSolicitud, obtenerCoincidencias, IMPORTANCIAS,
+    listarPublicadas, cambiarEstado, actualizarSolicitud, postularse, misCandidaturas, listarCandidaturas, cambiarEstadoCandidatura };

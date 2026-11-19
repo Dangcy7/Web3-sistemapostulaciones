@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#1E1F26">
-  <title>Solicitudes de trabajo | CodeWork</title>
+  <title>Ofertas laborales | CodeWork</title>
   <link rel="icon" type="image/png" href="../assets/icons/logo.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -19,10 +19,10 @@
   </header>
 
   <main class="page-width content-page">
-    <div class="page-title-row"><div><p class="eyebrow">ESPACIO ADMINISTRATIVO</p><h1>Búsqueda y selección</h1><p class="page-lede">Define los requisitos de una oportunidad y revisa qué perfiles cumplen mejor con ellos.</p></div><span class="role-chip"><span class="role-dot"></span> Acceso administrador</span></div>
+    <div class="page-title-row"><div><p class="eyebrow">ESPACIO ADMINISTRATIVO</p><h1>Ofertas laborales</h1><p class="page-lede">Publica oportunidades y gestiona las candidaturas recibidas.</p></div><span class="role-chip"><span class="role-dot"></span> Acceso administrador</span></div>
 
     <section class="panel-card request-create" aria-labelledby="request-create-title">
-      <div class="card-heading"><div><p class="eyebrow">NUEVA OPORTUNIDAD</p><h2 id="request-create-title">Definir solicitud de trabajo</h2></div></div>
+      <div class="card-heading"><div><p class="eyebrow">NUEVA OPORTUNIDAD</p><h2 id="request-create-title">Crear oferta</h2></div></div>
       <form id="solicitud-form" novalidate>
         <div class="field-grid">
           <div class="field"><label for="solicitud-titulo">Puesto o cargo <span class="required-mark" aria-label="obligatorio">*</span></label><input id="solicitud-titulo" maxlength="120" required placeholder="Ej. Desarrollador backend"></div>
@@ -31,43 +31,33 @@
         </div>
 
         <div class="request-requirements">
-          <div class="form-section-heading"><span class="section-index">01</span><div><h2>Requisitos de la oportunidad</h2><p>Clasifica cada conocimiento y su nivel mínimo como indispensable o deseable.</p></div></div>
+          <div class="form-section-heading"><span class="section-index">01</span><div><h2>Requisitos de la oportunidad</h2><p>Selecciona los lenguajes y herramientas relacionados con el puesto.</p></div></div>
           <div class="field-grid request-preferences">
             <fieldset class="preference-group"><legend>Jornadas aceptadas <span class="required-mark" aria-label="obligatorio">*</span></legend><label><input type="checkbox" data-request-jornada value="tiempo_completo"> Tiempo completo</label><label><input type="checkbox" data-request-jornada value="tiempo_parcial"> Tiempo parcial</label></fieldset>
             <fieldset class="preference-group"><legend>Modalidades aceptadas <span class="required-mark" aria-label="obligatorio">*</span></legend><label><input type="checkbox" data-request-modalidad value="presencial"> Presencial</label><label><input type="checkbox" data-request-modalidad value="remoto"> Remoto</label><label><input type="checkbox" data-request-modalidad value="hibrido"> Híbrido</label></fieldset>
           </div>
           <div class="catalog-grid">
             <section class="catalog-panel language-panel" aria-labelledby="solicitud-lenguajes-heading">
-              <div class="catalog-title"><span class="catalog-icon" aria-hidden="true">&lt;/&gt;</span><div><h3 id="solicitud-lenguajes-heading">Lenguajes de programación</h3><p>Opciones del catálogo actual.</p></div></div>
-              <div class="catalog-control request-catalog-control"><label class="visually-hidden" for="solicitud-lenguaje">Lenguaje</label><select id="solicitud-lenguaje"><option value="">Selecciona un lenguaje</option></select><label class="visually-hidden" for="nivel-minimo-lenguaje">Nivel mínimo</label><select id="nivel-minimo-lenguaje"><option value="">Nivel mínimo</option><option value="basico">Básico</option><option value="intermedio">Intermedio</option><option value="avanzado">Avanzado</option><option value="experto">Experto</option></select><label class="visually-hidden" for="importancia-lenguaje">Importancia</label><select id="importancia-lenguaje"><option value="indispensable">Indispensable</option><option value="deseable">Deseable</option></select><button class="button button-small" type="button" data-add-requirement="lenguajes">Añadir</button></div>
-              <div id="requisitos-lenguajes" class="chip-list" aria-label="Requisitos de lenguajes"></div>
+              <div class="catalog-title"><span class="catalog-icon" aria-hidden="true">&lt;/&gt;</span><div><h3 id="solicitud-lenguajes-heading">Lenguajes de programación</h3><p>Catálogo compartido.</p></div></div>
+              <div id="solicitud-lenguajes-checks" class="preference-group" aria-label="Lenguajes requeridos"></div>
             </section>
             <section class="catalog-panel tool-panel" aria-labelledby="solicitud-herramientas-heading">
-              <div class="catalog-title"><span class="catalog-icon" aria-hidden="true">⌘</span><div><h3 id="solicitud-herramientas-heading">Herramientas</h3><p>Opciones del catálogo actual.</p></div></div>
-              <div class="catalog-control request-catalog-control"><label class="visually-hidden" for="solicitud-herramienta">Herramienta</label><select id="solicitud-herramienta"><option value="">Selecciona una herramienta</option></select><label class="visually-hidden" for="nivel-minimo-herramienta">Nivel mínimo</label><select id="nivel-minimo-herramienta"><option value="">Nivel mínimo</option><option value="basico">Básico</option><option value="intermedio">Intermedio</option><option value="avanzado">Avanzado</option><option value="experto">Experto</option></select><label class="visually-hidden" for="importancia-herramienta">Importancia</label><select id="importancia-herramienta"><option value="indispensable">Indispensable</option><option value="deseable">Deseable</option></select><button class="button button-small" type="button" data-add-requirement="herramientas">Añadir</button></div>
-              <div id="requisitos-herramientas" class="chip-list" aria-label="Requisitos de herramientas"></div>
+              <div class="catalog-title"><span class="catalog-icon" aria-hidden="true">⌘</span><div><h3 id="solicitud-herramientas-heading">Herramientas</h3><p>Catálogo compartido.</p></div></div>
+              <div id="solicitud-herramientas-checks" class="preference-group" aria-label="Herramientas requeridas"></div>
             </section>
           </div>
-          <p class="inline-note">Añade al menos un requisito. La formación, la experiencia y los proyectos se muestran para revisión del administrador y no reciben una puntuación automática.</p>
+          <p class="inline-note">Los conocimientos seleccionados aparecen en la oferta pública.</p>
         </div>
-        <div class="form-actions"><p id="solicitud-form-status" class="form-stage-note" role="status" aria-live="polite">Los requisitos indispensables filtran; los deseables calculan el porcentaje.</p><button id="crear-solicitud" class="button" type="submit">Crear solicitud <span aria-hidden="true">→</span></button></div>
+        <div class="form-actions"><label for="estado-publicacion">Estado inicial</label><select id="estado-publicacion"><option value="borrador">Borrador</option><option value="publicada">Publicar</option></select><p id="solicitud-form-status" class="form-stage-note" role="status" aria-live="polite"></p><button id="crear-solicitud" class="button" type="submit">Crear oferta <span aria-hidden="true">→</span></button></div>
       </form>
     </section>
 
     <section class="panel-card request-list-panel" aria-labelledby="requests-title">
-      <div class="card-heading"><div><p class="eyebrow">SOLICITUDES GUARDADAS</p><h2 id="requests-title">Consultar coincidencias</h2></div></div>
+      <div class="card-heading"><div><p class="eyebrow">OFERTAS GUARDADAS</p><h2 id="requests-title">Gestionar ofertas</h2></div></div>
       <p id="solicitudes-status" class="muted" role="status" aria-live="polite">Cargando solicitudes…</p>
       <div id="solicitudes-list" class="request-list"></div>
     </section>
 
-    <section id="coincidencias-panel" class="panel-card matches-panel" aria-labelledby="matches-title" hidden>
-      <div class="card-heading"><div><p class="eyebrow">CANDIDATOS APTOS</p><h2 id="matches-title">Resultados de coincidencia</h2></div><span id="matches-count" class="role-chip"></span></div>
-      <p id="matches-description" class="muted"></p>
-      <div id="matches-requirements" class="criteria-summary" aria-label="Requisitos de la solicitud"></div>
-      <div id="matches-list" class="matches-list"></div>
-      <div id="candidate-detail" class="candidate-detail" hidden></div>
-      <p class="privacy-footnote">El porcentaje es una referencia basada en requisitos explícitos. CodeWork no selecciona postulantes; la decisión final corresponde al administrador.</p>
-    </section>
   </main>
 
   <footer class="simple-footer"><a href="postulantes.html">← Volver al panel</a><span>© 2026 CodeWork</span></footer>
